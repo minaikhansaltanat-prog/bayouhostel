@@ -217,6 +217,9 @@
 <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
   <path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"/><circle cx="12" cy="9" r="2.3"/>
 </symbol>
+<symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/>
+</symbol>
 </defs>
 </svg>
 
@@ -488,51 +491,118 @@
 
     <!-- testimonial carousel -->
     <div class="mt-14 reveal" data-carousel>
-      <div class="flex items-center justify-between mb-6">
-        <p data-i18n="testimonialsLabel" class="text-xs uppercase tracking-wider text-cream-50/40">Демо-отзывы · обновим на реальные после первых клиентов</p>
-        <div class="hidden sm:flex items-center gap-3">
-          <button type="button" data-prev class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:prevTestimonial" aria-label="Предыдущий отзыв"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
-          <button type="button" data-next class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:nextTestimonial" aria-label="Следующий отзыв"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
-        </div>
+      <div class="mb-8">
+        <p data-i18n="testimonialsLabel" class="text-xs uppercase tracking-wider text-cream-50/40">Форматы отзывов · обновим на реальные после первых клиентов</p>
       </div>
 
-      <div class="carousel-viewport -mx-2">
-        <div class="carousel-track" data-track>
+      <!-- arrows flank the track via wrapper padding -->
+      <div class="relative px-12 md:px-14">
 
-          <article class="shrink-0 px-2" style="flex:0 0 100%;">
-            <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm">
-              <p data-i18n="testimonial1Quote" class="font-display italic text-lg md:text-xl leading-relaxed text-cream-50/90">«Раньше я тратил 3 часа утром просто на то, чтобы понять, кто заселён. Сейчас открываю BaYou — и всё видно за 30 секунд.»</p>
-              <p class="mt-6 text-sm text-cream-50/55">— Әли Нұрланов, «Достар Hostel», Алматы</p>
-            </div>
-          </article>
+        <button type="button" data-prev
+          class="absolute left-0 top-1/2 -translate-y-1/2 z-10 carousel-arrow bg-white/8 border border-white/25 text-cream-50 shadow-[0_4px_20px_rgba(11,23,48,.5)]"
+          data-i18n-attr="aria-label:prevTestimonial" aria-label="Предыдущий отзыв">
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-left"/></svg>
+        </button>
 
-          <article class="shrink-0 px-2" style="flex:0 0 100%;">
-            <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm">
-              <p data-i18n="testimonial2Quote" class="font-display italic text-lg md:text-xl leading-relaxed text-cream-50/90">«E-Qонақ всегда был головной болью. Теперь это занимает 2 минуты. Без ошибок.»</p>
-              <p class="mt-6 text-sm text-cream-50/55">— Динара Сейітова, «Sunrise Hostel», Астана</p>
-            </div>
-          </article>
+        <div class="carousel-viewport">
+          <div class="carousel-track" data-track>
 
-          <article class="shrink-0 px-2" style="flex:0 0 100%;">
-            <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm">
-              <p data-i18n="testimonial3Quote" class="font-display italic text-lg md:text-xl leading-relaxed text-cream-50/90">«Kaspi и Halyk теперь сами падают в кассу. Я наконец вижу, сколько хостел зарабатывает в реальном времени.»</p>
-              <p class="mt-6 text-sm text-cream-50/55">— Ермек Жақсыбеков, «Almaty Lights Hostel», Алматы</p>
-            </div>
-          </article>
+            <!-- Card 1: Жазбаша / Письменный отзыв -->
+            <article class="shrink-0 px-2" style="flex:0 0 100%;">
+              <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm flex flex-col">
+                <div class="flex gap-0.5 text-gold-400 text-lg" aria-hidden="true">★★★★★</div>
+                <p data-i18n="review1Quote" class="mt-4 font-display italic text-lg md:text-xl leading-relaxed text-cream-50/90 flex-1">«Попробовали неделю — время регистрации в E-Qонақ сократилось с 20 минут до 2. Обратного пути нет.»</p>
+                <p data-i18n="review1Author" class="mt-5 text-sm text-cream-50/55">— Алматы, менеджер хостела</p>
+                <div class="mt-5 pt-5 border-t border-white/10 flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gold-400/55 shrink-0" aria-hidden="true"><use href="#i-doc"/></svg>
+                  <span data-i18n="review1Type" class="text-[11px] font-semibold uppercase tracking-[.12em] text-gold-400/55">Письменный отзыв</span>
+                </div>
+              </div>
+            </article>
 
-          <article class="shrink-0 px-2" style="flex:0 0 100%;">
-            <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm">
-              <p data-i18n="testimonial4Quote" class="font-display italic text-lg md:text-xl leading-relaxed text-cream-50/90">«Запустились за один день. Без карты, без обязательств — а сейчас не представляю работу без BaYou.»</p>
-              <p class="mt-6 text-sm text-cream-50/55">— Айгерім Төлеген, «Shymkent Travel Hostel», Шымкент</p>
-            </div>
-          </article>
+            <!-- Card 2: Видео / Видео-отзыв -->
+            <article class="shrink-0 px-2" style="flex:0 0 100%;">
+              <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl overflow-hidden backdrop-blur-sm flex flex-col">
+                <div class="relative h-36 md:h-44 bg-navy-950/70 flex items-center justify-center shrink-0">
+                  <div class="w-14 h-14 rounded-full bg-gold-500/90 flex items-center justify-center shadow-[0_0_30px_rgba(217,165,33,.35)]">
+                    <svg class="w-6 h-6 text-navy-950 ml-1" aria-hidden="true"><use href="#i-play"/></svg>
+                  </div>
+                  <span data-i18n="review2Duration" class="absolute bottom-3 right-4 text-[11px] text-cream-50/60 font-mono bg-navy-950/60 px-2 py-0.5 rounded-md">3:42</span>
+                </div>
+                <div class="p-7 md:p-8 flex flex-col flex-1">
+                  <p data-i18n="review2Quote" class="font-display italic text-base md:text-lg leading-relaxed text-cream-50/90 flex-1">«После одной недели стало понятно: возврата к старому нет...»</p>
+                  <p data-i18n="review2Author" class="mt-4 text-sm text-cream-50/55">— Астана, владелец хостела</p>
+                  <div class="mt-5 pt-5 border-t border-white/10 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-gold-400/55 shrink-0" aria-hidden="true"><use href="#i-play"/></svg>
+                    <span data-i18n="review2Type" class="text-[11px] font-semibold uppercase tracking-[.12em] text-gold-400/55">Видео-отзыв</span>
+                  </div>
+                </div>
+              </div>
+            </article>
 
+            <!-- Card 3: Аудио / Аудио-отзыв -->
+            <article class="shrink-0 px-2" style="flex:0 0 100%;">
+              <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm flex flex-col">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-gold-400/15 border border-gold-400/30 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4 text-gold-400 ml-0.5" aria-hidden="true"><use href="#i-play"/></svg>
+                  </div>
+                  <div class="flex items-end gap-[3px] flex-1 h-8">
+                    <div class="w-[3px] rounded-full bg-gold-400/30" style="height:35%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/50" style="height:65%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/70" style="height:90%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/55" style="height:55%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/80" style="height:100%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/65" style="height:75%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/45" style="height:45%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/60" style="height:82%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/40" style="height:60%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/55" style="height:40%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/70" style="height:88%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/45" style="height:50%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/60" style="height:70%"></div>
+                    <div class="w-[3px] rounded-full bg-gold-400/35" style="height:30%"></div>
+                  </div>
+                  <span data-i18n="review3Duration" class="text-xs text-cream-50/50 font-mono shrink-0">2:18</span>
+                </div>
+                <p data-i18n="review3Quote" class="mt-6 font-display italic text-base md:text-lg leading-relaxed text-cream-50/90 flex-1">«Подключение Kaspi и Halyk заняло 2 часа. Теперь всё фиксируется автоматически.»</p>
+                <p data-i18n="review3Author" class="mt-4 text-sm text-cream-50/55">— Шымкент, оператор хостела</p>
+                <div class="mt-5 pt-5 border-t border-white/10 flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gold-400/55 shrink-0" aria-hidden="true"><use href="#i-mic"/></svg>
+                  <span data-i18n="review3Type" class="text-[11px] font-semibold uppercase tracking-[.12em] text-gold-400/55">Аудио-отзыв</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 4: 2GIS -->
+            <article class="shrink-0 px-2" style="flex:0 0 100%;">
+              <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl overflow-hidden backdrop-blur-sm flex flex-col">
+                <div class="bg-[#1CC55B]/10 border-b border-[#1CC55B]/20 px-7 py-4 flex items-center justify-between shrink-0">
+                  <span class="font-bold text-[#1CC55B] text-xl tracking-[-0.03em]">2GIS</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[#1CC55B] text-base">★★★★★</span>
+                    <span data-i18n="review4Rating" class="font-semibold text-sm text-cream-50">4.9</span>
+                  </div>
+                </div>
+                <div class="p-7 md:p-8 flex flex-col flex-1">
+                  <p data-i18n="review4Quote" class="font-display italic text-base md:text-lg leading-relaxed text-cream-50/90 flex-1">«Система очень удобная, интерфейс понятный. Рекомендуем всем хостелам.»</p>
+                  <p data-i18n="review4Author" class="mt-4 text-sm text-cream-50/55">— Акниет Б. · пользователь 2GIS</p>
+                  <div class="mt-5 pt-5 border-t border-white/10 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-gold-400/55 shrink-0" aria-hidden="true"><use href="#i-pin"/></svg>
+                    <span data-i18n="review4Count" class="text-[11px] font-semibold uppercase tracking-[.12em] text-gold-400/55">47 отзывов · в 2GIS</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+          </div>
         </div>
-      </div>
 
-      <div class="flex sm:hidden items-center gap-3 mt-6">
-        <button type="button" data-prev class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:prevTestimonial" aria-label="Предыдущий отзыв"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
-        <button type="button" data-next class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:nextTestimonial" aria-label="Следующий отзыв"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+        <button type="button" data-next
+          class="absolute right-0 top-1/2 -translate-y-1/2 z-10 carousel-arrow bg-white/8 border border-white/25 text-cream-50 shadow-[0_4px_20px_rgba(11,23,48,.5)]"
+          data-i18n-attr="aria-label:nextTestimonial" aria-label="Следующий отзыв">
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+        </button>
       </div>
     </div>
 
@@ -886,13 +956,25 @@
       stat1Label: 'хостелов подключены',
       stat2Label: 'регистрация в E-Qонақ',
       stat3Label: 'двойных броней',
-      testimonialsLabel: 'Демо-отзывы · обновим на реальные после первых клиентов',
+      testimonialsLabel: 'Форматы отзывов · обновим на реальные после первых клиентов',
       prevTestimonial: 'Предыдущий отзыв',
       nextTestimonial: 'Следующий отзыв',
-      testimonial1Quote: '«Раньше я тратил 3 часа утром просто на то, чтобы понять, кто заселён. Сейчас открываю BaYou — и всё видно за 30 секунд.»',
-      testimonial2Quote: '«E-Qонақ всегда был головной болью. Теперь это занимает 2 минуты. Без ошибок.»',
-      testimonial3Quote: '«Kaspi и Halyk теперь сами падают в кассу. Я наконец вижу, сколько хостел зарабатывает в реальном времени.»',
-      testimonial4Quote: '«Запустились за один день. Без карты, без обязательств — а сейчас не представляю работу без BaYou.»',
+      review1Type: 'Письменный отзыв',
+      review1Quote: '«Попробовали неделю — время регистрации в E-Qонақ сократилось с 20 минут до 2. Обратного пути нет.»',
+      review1Author: '— Алматы, менеджер хостела',
+      review2Type: 'Видео-отзыв',
+      review2Duration: '3:42',
+      review2Quote: '«После одной недели стало понятно: возврата к старому нет...»',
+      review2Author: '— Астана, владелец хостела',
+      review3Type: 'Аудио-отзыв',
+      review3Duration: '2:18',
+      review3Quote: '«Подключение Kaspi и Halyk заняло 2 часа. Теперь всё фиксируется автоматически.»',
+      review3Author: '— Шымкент, оператор хостела',
+      review4Type: '2GIS пікірі',
+      review4Rating: '4.9',
+      review4Quote: '«Система очень удобная, интерфейс понятный. Рекомендуем всем хостелам.»',
+      review4Author: '— Акниет Б. · пользователь 2GIS',
+      review4Count: '47 отзывов · в 2GIS',
       galleryLabel: 'Хостелы на платформе BaYou · временные фото',
       prevPhoto: 'Предыдущее фото',
       nextPhoto: 'Следующее фото',
@@ -985,7 +1067,7 @@
       problem2Desc: 'Шетелдік қонақты тіркеу 20 минут алады. Тексеруші келді — құжаттар дайын емес. Айыппұл.',
       problem3Title: '«Айдағы ақша қайда?»',
       problem3Desc: 'Kaspi келді, кассада қолма-қол ақша, бір бөлігі қолсыз есеп. Нақты қанша таптыңыз — айдың аяғында, үлгерсеңіз, біле аласыз.',
-      solutionHeading: 'BaYou — демалысқа шықпайтын сіздің <span class="italic text-gradient-gold">екінші әкімшіңіз</span>',
+      solutionHeading: 'BaYou — демалысқа шықпайтын сіздің <span class="italic text-gradient-gold">екінші администраторыңыз</span>',
       solutionDesc: 'Хостел операторына қажеттінің бәрін бір жүйеге жинадық. Телефонда, планшетте, компьютерде жұмыс істейді. Қазақстан нарығында жұмыс істейді — Kaspi, Halyk, E-Qонақ-пен.',
       featuresHeading: 'Алты қосымшаның орнына бір экран',
       feature1Title: 'Нөмірлерді басқару жүйесі',
@@ -1011,13 +1093,25 @@
       stat1Label: 'хостел қосылды',
       stat2Label: 'E-Qонақ-қа тіркелу',
       stat3Label: 'қос брондау',
-      testimonialsLabel: 'Демо-пікірлер · алғашқы клиенттерден кейін нақтыға алмастырамыз',
+      testimonialsLabel: 'Пікір форматтары · алғашқы клиенттерден кейін нақтыға алмастырамыз',
       prevTestimonial: 'Алдыңғы пікір',
       nextTestimonial: 'Келесі пікір',
-      testimonial1Quote: '«Бұрын таңертең кімнің қонып тұрғанын білу үшін 3 сағат жұмсайтын едім. Қазір BaYou-ды ашамын — бәрі 30 секундта көрінеді.»',
-      testimonial2Quote: '«E-Qонақ әрқашан бас ауруы болды. Енді бұл 2 минут алады. Қателіксіз.»',
-      testimonial3Quote: '«Kaspi мен Halyk енді өздері кассаға түседі. Ақыры хостелдің нақты уақытта қанша табатынын көріп отырмын.»',
-      testimonial4Quote: '«Бір күнде іске қостық. Картасыз, міндеттемесіз — ал қазір BaYou-сыз жұмысты елестете алмаймын.»',
+      review1Type: 'Жазбаша пікір',
+      review1Quote: '«Бір апта пайдаланып көрдік — E-Qонақ тіркеу 20 минуттан 2 минутқа дейін қысқарды. Бұрынғыға оралу мүмкін емес.»',
+      review1Author: '— Алматы, хостел менеджері',
+      review2Type: 'Видео пікір',
+      review2Duration: '3:42',
+      review2Quote: '«Бір аптадан кейін бұрынғы жүйеге оралу мүмкін еместігі белгілі болды...»',
+      review2Author: '— Астана, хостел иесі',
+      review3Type: 'Аудио пікір',
+      review3Duration: '2:18',
+      review3Quote: '«Kaspi мен Halyk-ты қосу 2 сағат алды. Енді бәрі автоматты түрде тіркеледі.»',
+      review3Author: '— Шымкент, хостел операторы',
+      review4Type: '2GIS пікірі',
+      review4Rating: '4.9',
+      review4Quote: '«Жүйе өте ыңғайлы, интерфейс нақты. Кез-келген хостелге ұсынамын.»',
+      review4Author: '— Акниет Б. · 2GIS пайдаланушысы',
+      review4Count: '47 пікір · 2GIS-те',
       galleryLabel: 'BaYou платформасындағы хостелдер · уақытша фотолар',
       prevPhoto: 'Алдыңғы фото',
       nextPhoto: 'Келесі фото',
@@ -1060,8 +1154,8 @@
       faqA7: 'Барлық брондарды, қонақтарды және қаржылық есептерді кез келген уақытта жүктеп алуға болады. Деректерді жүктеп алу мүмкіндігі жазылым тоқтатылғаннан кейін 90 күн сақталады.',
       faqQ8: 'Бір аккаунттан бірнеше хостелді басқаруға болады ма?',
       faqA8: 'Иә. «Профи» тарифі бір жеке кабинеттен бірнеше нысанды және шектелмеген төсек санын қолдайды — хостел желілеріне ыңғайлы.',
-      faqQ9: 'Әкімшілерді оқыту қанша тұрады?',
-      faqA9: 'Тегін. Онбординг және персоналды оқыту кез келген тарифке кіреди — біздің команда бастауда әкімшілерді қосып, оқытады.',
+      faqQ9: 'Администраторларды оқыту қанша тұрады?',
+      faqA9: 'Тегін. Онбординг және персоналды оқыту кез келген тарифке кіреді — біздің команда бастауда администраторларды қосып, оқытады.',
       ctaHeading: '1 ай · 30 күн тегін сынап көріңіз',
       ctaSub: 'Картасыз. Міндеттемесіз. Хостелдің хаоссыз қалай жұмыс істейтінін көріңіз.',
       ctaButton: 'Тегін бастау',
