@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="metaTitle">BaYou — Система управления хостелом в Казахстане | PMS + E-Qонақ + Kaspi</title>
+<meta name="description" data-i18n-attr="content:metaDescription" content="Управляйте хостелом в одной системе: бронирование, E-Qонақ, Kaspi-оплаты, AI-чатбот. Попробуйте бесплатно 1 ай · 30 күн. Сделано для Казахстана.">
+<link rel="icon" type="image/png" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="assets/favicon.png" sizes="512x512">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Commissioner:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          cream: { 50:'#FBF7EE', 100:'#F4ECDC', 200:'#E9DCBE' },
+          navy:  { 950:'#070D1B', 900:'#0B1730', 850:'#0E1D3B', 800:'#122A4D', 700:'#173760', 600:'#1E4577', 500:'#2C5494' },
+          gold:  { 300:'#F3D484', 400:'#E8BE52', 500:'#D9A521', 600:'#A87A14' },
+          ink:   '#161B22',
+        },
+        fontFamily: {
+          display: ['Spectral','serif'],
+          sans: ['Commissioner','sans-serif'],
+        },
+        boxShadow: {
+          soft: '0 24px 60px -18px rgba(7,13,27,0.45)',
+          gold: '0 16px 40px -10px rgba(217,165,33,0.45)',
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  :root{ --header-h: 84px; }
+  html{scroll-behavior:smooth; overflow-x:hidden;}
+  body{overflow-x:hidden; overscroll-behavior-y:none; background:#FBF7EE; color:#161B22;}
+  body.menu-open{overflow:hidden; height:100%;}
+  ::selection{background:#D9A521; color:#0B1730;}
+
+  .container-bayou{ max-width:1280px; margin-inline:auto; padding-inline:1.25rem; }
+  @media(min-width:768px){ .container-bayou{ padding-inline:2rem; } }
+
+  /* texture / grain */
+  .grain{ position:absolute; inset:0; pointer-events:none; opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .bg-radial-navy{ background: radial-gradient(120% 90% at 18% 0%, #163058 0%, #0B1730 45%, #070D1B 100%); }
+  .bg-radial-navy-2{ background: radial-gradient(110% 80% at 82% 100%, #173760 0%, #0E1D3B 50%, #070D1B 100%); }
+
+  .text-gradient-gold{ background:linear-gradient(95deg,#F3D484,#D9A521 55%,#A87A14); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  .btn-gold{
+    background:linear-gradient(135deg,#F3D484,#D9A521 60%,#C2901C);
+    color:#0B1730;
+    box-shadow: 0 14px 32px -10px rgba(217,165,33,.55);
+    transition: transform .25s cubic-bezier(.22,.61,.36,1), box-shadow .25s ease, filter .25s ease;
+  }
+  .btn-gold:hover{ transform:translateY(-2px); box-shadow:0 20px 42px -10px rgba(217,165,33,.65); filter:brightness(1.04); }
+  .btn-gold:active{ transform:translateY(0); }
+
+  .btn-ghost-cream{
+    background:rgba(251,247,238,0.08);
+    border:1px solid rgba(251,247,238,0.28);
+    color:#FBF7EE;
+    transition: background .25s ease, border-color .25s ease, transform .25s cubic-bezier(.22,.61,.36,1);
+  }
+  .btn-ghost-cream:hover{ background:rgba(251,247,238,0.16); border-color:rgba(251,247,238,0.5); transform:translateY(-2px); }
+
+  .btn-navy{
+    background:#0B1730; color:#FBF7EE;
+    transition: transform .25s cubic-bezier(.22,.61,.36,1), background .25s ease, box-shadow .25s ease;
+    box-shadow: 0 14px 28px -12px rgba(11,23,48,.5);
+  }
+  .btn-navy:hover{ background:#122A4D; transform:translateY(-2px); }
+
+  a, button{ cursor:pointer; }
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
+    outline:2px solid #D9A521; outline-offset:3px; border-radius:6px;
+  }
+
+  /* reveal-on-scroll */
+  .reveal{ opacity:0; transform:translateY(22px); transition:opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1); }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+  @media (prefers-reduced-motion: reduce){
+    .reveal{ opacity:1; transform:none; transition:none; }
+  }
+
+  /* Header */
+  #site-header{ transition: background-color .35s ease, box-shadow .35s ease, padding .35s ease; }
+  #site-header.scrolled{ box-shadow: 0 8px 30px -12px rgba(7,13,27,.25); }
+
+  /* Hamburger -> X morph */
+  .burger{ width:26px; height:18px; position:relative; }
+  .burger span{
+    position:absolute; left:0; width:100%; height:2px; border-radius:2px;
+    background:currentColor; transition: transform .35s cubic-bezier(.65,0,.35,1), opacity .25s ease, top .35s cubic-bezier(.65,0,.35,1);
+  }
+  .burger span:nth-child(1){ top:0; }
+  .burger span:nth-child(2){ top:8px; }
+  .burger span:nth-child(3){ top:16px; }
+  #menu-toggle[aria-expanded="true"] .burger span:nth-child(1){ top:8px; transform:rotate(45deg); }
+  #menu-toggle[aria-expanded="true"] .burger span:nth-child(2){ opacity:0; }
+  #menu-toggle[aria-expanded="true"] .burger span:nth-child(3){ top:8px; transform:rotate(-45deg); }
+
+  /* Mobile drawer */
+  #mobile-drawer{ transform:translateX(100%); transition: transform .45s cubic-bezier(.22,.61,.36,1); }
+  #mobile-drawer.open{ transform:translateX(0); }
+  #mobile-backdrop{ opacity:0; pointer-events:none; transition:opacity .35s ease; }
+  #mobile-backdrop.open{ opacity:1; pointer-events:auto; }
+
+  /* Carousel */
+  .carousel-viewport{ overflow:hidden; }
+  .carousel-track{ display:flex; will-change:transform; }
+  .carousel-arrow{
+    width:46px; height:46px; border-radius:9999px; display:flex; align-items:center; justify-content:center;
+    transition: transform .2s cubic-bezier(.22,.61,.36,1), background-color .2s ease, border-color .2s ease;
+    flex-shrink:0;
+  }
+  .carousel-arrow:hover{ transform:scale(1.07); }
+  .carousel-arrow:active{ transform:scale(.96); }
+
+  /* FAQ accordion using grid-rows trick */
+  .faq-panel-wrap{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .4s cubic-bezier(.22,.61,.36,1); }
+  .faq-item[data-open="true"] .faq-panel-wrap{ grid-template-rows:1fr; }
+  .faq-panel-inner{ overflow:hidden; }
+  .faq-chevron{ transition: transform .35s cubic-bezier(.22,.61,.36,1); }
+  .faq-item[data-open="true"] .faq-chevron{ transform:rotate(45deg); }
+
+  .card-elevated{ box-shadow: 0 1px 2px rgba(11,23,48,.04), 0 18px 40px -20px rgba(11,23,48,.18); }
+  .ring-card{ transition: transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s ease, border-color .35s ease; }
+  .ring-card:hover{ transform:translateY(-6px); box-shadow:0 28px 60px -22px rgba(11,23,48,.28); }
+
+  .line-rule{ height:2px; width:40px; background:linear-gradient(90deg,#D9A521,#F3D484); border-radius:2px; }
+
+  .pill{ border:1px solid rgba(11,23,48,.12); }
+
+  .img-cover{ object-fit:cover; }
+
+  /* Language switch */
+  .lang-switch--light{ background:rgba(11,23,48,.06); border:1px solid rgba(11,23,48,.14); }
+  .lang-switch--light .lang-btn{ color:rgba(11,23,48,.55); }
+  .lang-switch--light .lang-btn.is-active{ background:#0B1730; color:#E8BE52; }
+  .lang-switch--dark{ background:rgba(251,247,238,.07); border:1px solid rgba(251,247,238,.2); }
+  .lang-switch--dark .lang-btn{ color:rgba(251,247,238,.6); }
+  .lang-switch--dark .lang-btn.is-active{ background:#D9A521; color:#0B1730; }
+  .lang-btn{ transition: background-color .25s ease, color .25s ease; line-height:1; }
+</style>
+</head>
+<body class="font-sans text-ink bg-cream-50 antialiased">
+
+<!-- ICON SPRITE -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-menu-logo" viewBox="0 0 24 24"></symbol>
+<symbol id="i-bed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M3 18v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7"/><path d="M3 14h18"/><path d="M3 18v2M21 18v2"/><path d="M7 9V6a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3"/>
+</symbol>
+<symbol id="i-bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 4v4"/><circle cx="12" cy="3" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="13.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="13.5" r="1.3" fill="currentColor" stroke="none"/><path d="M2 12h2M20 12h2"/>
+</symbol>
+<symbol id="i-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="8.5"/><path d="M6.5 6.5l11 11"/>
+</symbol>
+<symbol id="i-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="2.5" y="5.5" width="19" height="13" rx="2.2"/><path d="M2.5 10h19"/><path d="M6 14.5h4"/>
+</symbol>
+<symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M7 3.5h7l3.5 3.5V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M14 3.5V7h3.5"/><path d="M8.5 12h7M8.5 15h7M8.5 18h4.5"/>
+</symbol>
+<symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2.5 20h19"/>
+</symbol>
+<symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M5.5 3.5h3l1.5 4-2 1.5a13 13 0 0 0 6.5 6.5l1.5-2 4 1.5v3a1.5 1.5 0 0 1-1.6 1.5A17.5 17.5 0 0 1 4 5.1a1.5 1.5 0 0 1 1.5-1.6Z"/>
+</symbol>
+<symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M3.5 12a8.5 8.5 0 1 1 3.4 6.8L3.5 20l1.2-3.4A8.4 8.4 0 0 1 3.5 12Z"/>
+</symbol>
+<symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/>
+</symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4 12.5 9.5 18 20 6"/>
+</symbol>
+<symbol id="i-dash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+  <path d="M5 12h14"/>
+</symbol>
+<symbol id="i-chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M15 5 8 12l7 7"/>
+</symbol>
+<symbol id="i-chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M9 5l7 7-7 7"/>
+</symbol>
+<symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 5v14M5 12h14"/>
+</symbol>
+<symbol id="i-play" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+  <path d="M7 4.5v15l13-7.5z"/>
+</symbol>
+<symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3.5 19 6.5v5.3c0 5-3 7.7-7 8.7-4-1-7-3.7-7-8.7V6.5z"/><path d="M9 12l2 2 4-4.5"/>
+</symbol>
+<symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"/><circle cx="12" cy="9" r="2.3"/>
+</symbol>
+</defs>
+</svg>
+
+<!-- ============ HEADER ============ -->
+<header id="site-header" class="fixed top-0 inset-x-0 z-50 bg-cream-50/95 backdrop-blur-sm">
+  <div class="container-bayou flex items-center justify-between h-[76px] md:h-[84px]">
+    <a href="#hero" class="flex items-center gap-2 shrink-0" data-i18n-attr="aria-label:navHomeLabel" aria-label="BaYou — на главную">
+      <img src="assets/logo.png" alt="BaYou — Hostel Management Platform" data-i18n-attr="alt:logoAlt" class="h-9 md:h-10 w-auto">
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-9 font-medium text-[15px] text-navy-900/80">
+      <a href="#features" data-i18n="navFeatures" class="hover:text-navy-900 transition-colors duration-200">Возможности</a>
+      <a href="#how" data-i18n="navHow" class="hover:text-navy-900 transition-colors duration-200">Как это работает</a>
+      <a href="#proof" data-i18n="navProof" class="hover:text-navy-900 transition-colors duration-200">Отзывы</a>
+      <a href="#pricing" data-i18n="navPricing" class="hover:text-navy-900 transition-colors duration-200">Тарифы</a>
+      <a href="#faq" data-i18n="navFaq" class="hover:text-navy-900 transition-colors duration-200">FAQ</a>
+    </nav>
+
+    <div class="hidden lg:flex items-center gap-5">
+      <div class="lang-switch lang-switch--light inline-flex items-center rounded-full p-1 text-[13px] font-semibold" role="group" data-i18n-attr="aria-label:langSwitchLabel" aria-label="Тіл / Язык">
+        <button type="button" data-lang-btn="ru" class="lang-btn px-3 py-1.5 rounded-full" aria-pressed="true">RU</button>
+        <button type="button" data-lang-btn="kk" class="lang-btn px-3 py-1.5 rounded-full" aria-pressed="false">ҚАЗ</button>
+      </div>
+      <a href="tel:+77086279544" class="flex items-center gap-2 text-[15px] font-medium text-navy-900/80 hover:text-navy-900 transition-colors duration-200">
+        <svg class="w-[18px] h-[18px]" aria-hidden="true"><use href="#i-phone"/></svg>
+        +7 708 627 9544
+      </a>
+      <a href="#cta-final" data-i18n="navCta" class="btn-gold inline-flex items-center rounded-full px-5 py-2.5 text-[15px] font-semibold">Начать бесплатно</a>
+    </div>
+
+    <div class="flex items-center gap-2 lg:hidden">
+      <div class="lang-switch lang-switch--light inline-flex items-center rounded-full p-1 text-[12px] font-semibold" role="group" data-i18n-attr="aria-label:langSwitchLabel" aria-label="Тіл / Язык">
+        <button type="button" data-lang-btn="ru" class="lang-btn px-2.5 py-1.5 rounded-full" aria-pressed="true">RU</button>
+        <button type="button" data-lang-btn="kk" class="lang-btn px-2.5 py-1.5 rounded-full" aria-pressed="false">ҚАЗ</button>
+      </div>
+      <button id="menu-toggle" type="button" class="relative z-50 flex items-center justify-center w-11 h-11 -mr-1 text-navy-900" aria-expanded="false" aria-controls="mobile-drawer" data-i18n-attr="aria-label:menuOpenLabel" aria-label="Открыть меню">
+        <span class="burger"><span></span><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ MOBILE DRAWER ============ -->
+<div id="mobile-backdrop" class="fixed inset-0 z-40 bg-navy-950/55 lg:hidden"></div>
+<aside id="mobile-drawer" class="fixed top-0 right-0 z-40 h-full w-[84%] max-w-sm bg-navy-900 lg:hidden flex flex-col" aria-hidden="true">
+  <div class="flex items-center justify-between h-[76px] px-6 border-b border-white/10">
+    <img src="assets/logo.png" alt="BaYou" class="h-8 w-auto" style="filter:brightness(0) invert(1) opacity(.92);">
+    <span class="w-11 h-11"></span>
+  </div>
+  <div class="px-6 pt-6">
+    <div class="lang-switch lang-switch--dark inline-flex items-center rounded-full p-1 text-sm font-semibold" role="group" data-i18n-attr="aria-label:langSwitchLabel" aria-label="Тіл / Язык">
+      <button type="button" data-lang-btn="ru" class="lang-btn px-4 py-2 rounded-full" aria-pressed="true">RU</button>
+      <button type="button" data-lang-btn="kk" class="lang-btn px-4 py-2 rounded-full" aria-pressed="false">ҚАЗ</button>
+    </div>
+  </div>
+  <nav class="flex flex-col px-6 py-8 gap-1 text-lg font-medium text-cream-50/90">
+    <a data-drawer-link href="#features" class="py-3 border-b border-white/10 flex items-center justify-between"><span data-i18n="navFeatures">Возможности</span> <svg class="w-4 h-4 opacity-50" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    <a data-drawer-link href="#how" class="py-3 border-b border-white/10 flex items-center justify-between"><span data-i18n="navHow">Как это работает</span> <svg class="w-4 h-4 opacity-50" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    <a data-drawer-link href="#proof" class="py-3 border-b border-white/10 flex items-center justify-between"><span data-i18n="navProof">Отзывы</span> <svg class="w-4 h-4 opacity-50" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    <a data-drawer-link href="#pricing" class="py-3 border-b border-white/10 flex items-center justify-between"><span data-i18n="navPricing">Тарифы</span> <svg class="w-4 h-4 opacity-50" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+    <a data-drawer-link href="#faq" class="py-3 border-b border-white/10 flex items-center justify-between"><span data-i18n="navFaqFull">FAQ</span> <svg class="w-4 h-4 opacity-50" aria-hidden="true"><use href="#i-chevron-right"/></svg></a>
+  </nav>
+  <div class="mt-auto px-6 pb-10 pt-4 flex flex-col gap-4">
+    <a data-drawer-link href="#cta-final" data-i18n="drawerCta" class="btn-gold rounded-full px-5 py-3.5 text-center font-semibold">Начать бесплатно · 1 ай</a>
+    <a href="tel:+77086279544" class="flex items-center gap-2 text-cream-50/70 text-sm">
+      <svg class="w-4 h-4" aria-hidden="true"><use href="#i-phone"/></svg> +7 708 627 9544
+    </a>
+    <a href="https://wa.me/77086279544" target="_blank" rel="noopener" class="flex items-center gap-2 text-cream-50/70 text-sm">
+      <svg class="w-4 h-4" aria-hidden="true"><use href="#i-chat"/></svg> WhatsApp
+    </a>
+  </div>
+</aside>
+
+<main id="hero-anchor">
+
+<!-- ============ BLOCK 1 — HERO ============ -->
+<section id="hero" class="relative bg-radial-navy text-cream-50 pt-[76px] md:pt-[84px] overflow-hidden">
+  <div class="grain"></div>
+  <div class="absolute inset-0 -z-10">
+    <img src="assets/gallery/gallery-1.jpg" alt="" class="w-full h-full img-cover opacity-30" aria-hidden="true">
+    <div class="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/85 to-navy-900/40"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-navy-950/90 via-transparent to-navy-950/30"></div>
+  </div>
+
+  <div class="container-bayou relative py-16 md:py-24 lg:py-28">
+    <div class="max-w-2xl reveal">
+      <p data-i18n="heroKicker" class="uppercase tracking-[0.18em] text-gold-400 text-xs md:text-sm font-semibold mb-5">
+        Вносите гостей вручную и теряете брони в WhatsApp?
+      </p>
+      <h1 data-i18n="heroH1" class="font-display font-semibold text-[2.5rem] leading-[1.08] md:text-6xl md:leading-[1.05] tracking-[-0.01em]">
+        Управляйте хостелом —<br><span class="text-gradient-gold italic">не хаосом</span>
+      </h1>
+      <p data-i18n="heroSub" class="mt-6 text-lg md:text-xl text-cream-50/80 leading-relaxed max-w-xl">
+        BaYou — первая казахстанская платформа для хостелов: от бронирования до E&#8209;Qонақ за одно утро.
+      </p>
+
+      <div class="mt-9 flex flex-col sm:flex-row gap-4">
+        <a href="#cta-final" data-i18n="heroPrimaryCta" class="btn-gold inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 font-semibold text-base">
+          Попробовать бесплатно · 1 ай
+        </a>
+        <a href="#how" data-demo-link class="btn-ghost-cream inline-flex items-center justify-center gap-3 rounded-full px-7 py-4 font-semibold text-base">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gold-500 text-navy-950 shrink-0">
+            <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#i-play"/></svg>
+          </span>
+          <span data-i18n="heroSecondaryCta">Смотреть демо · 4 минуты</span>
+        </a>
+      </div>
+      <p data-i18n="heroMicrocopy" class="mt-5 text-sm text-cream-50/55">Без карты. Без договора. Отмена в один клик.</p>
+
+      <div class="mt-12 flex flex-wrap items-center gap-3">
+        <span data-i18n="heroTrustLabel" class="text-xs uppercase tracking-wider text-cream-50/40 mr-1">Нативно работает с</span>
+        <span class="pill rounded-full px-4 py-1.5 text-sm font-medium bg-white/5 border-white/15 text-cream-50/85">Kaspi Pay</span>
+        <span class="pill rounded-full px-4 py-1.5 text-sm font-medium bg-white/5 border-white/15 text-cream-50/85">Halyk Bank</span>
+        <span class="pill rounded-full px-4 py-1.5 text-sm font-medium bg-white/5 border-white/15 text-cream-50/85">E-Qонақ</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOCK 2 — PROBLEM ============ -->
+<section class="bg-cream-50 py-20 md:py-28">
+  <div class="container-bayou">
+    <div class="max-w-xl reveal">
+      <span class="line-rule block mb-5"></span>
+      <h2 data-i18n="problemHeading" class="font-display font-semibold text-3xl md:text-[2.6rem] leading-tight tracking-[-0.01em] text-navy-950">Узнаёте свой будний день?</h2>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-3 gap-6">
+      <div class="reveal ring-card card-elevated bg-white rounded-2xl p-7 md:p-8 border border-navy-950/5">
+        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-navy-900 text-gold-400 mb-6">
+          <svg class="w-6 h-6" aria-hidden="true"><use href="#i-bed"/></svg>
+        </div>
+        <h3 data-i18n="problem1Title" class="font-display font-semibold text-xl text-navy-950 mb-3">«Всё в блокноте и WhatsApp»</h3>
+        <p data-i18n="problem1Desc" class="text-[15px] leading-relaxed text-navy-950/65">Гость звонит → вы вносите вручную → другой гость уже забронировал эту кровать. Двойная бронь. Скандал. Возврат.</p>
+      </div>
+
+      <div class="reveal ring-card card-elevated bg-white rounded-2xl p-7 md:p-8 border border-navy-950/5" style="transition-delay:.08s">
+        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-navy-900 text-gold-400 mb-6">
+          <svg class="w-6 h-6" aria-hidden="true"><use href="#i-doc"/></svg>
+        </div>
+        <h3 data-i18n="problem2Title" class="font-display font-semibold text-xl text-navy-950 mb-3">«E-Qонақ — каждый раз заново»</h3>
+        <p data-i18n="problem2Desc" class="text-[15px] leading-relaxed text-navy-950/65">Регистрация иностранца занимает 20 минут. Проверяющий пришёл — документы не готовы. Штраф.</p>
+      </div>
+
+      <div class="reveal ring-card card-elevated bg-white rounded-2xl p-7 md:p-8 border border-navy-950/5" style="transition-delay:.16s">
+        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-navy-900 text-gold-400 mb-6">
+          <svg class="w-6 h-6" aria-hidden="true"><use href="#i-card"/></svg>
+        </div>
+        <h3 data-i18n="problem3Title" class="font-display font-semibold text-xl text-navy-950 mb-3">«Где деньги за месяц?»</h3>
+        <p data-i18n="problem3Desc" class="text-[15px] leading-relaxed text-navy-950/65">Kaspi пришёл, наличные в кассе, часть безналом. Сколько реально заработали — узнаёте в конце месяца, если успеваете посчитать.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOCK 3 — SOLUTION ============ -->
+<section class="relative bg-radial-navy-2 text-cream-50 py-20 md:py-28 overflow-hidden">
+  <div class="grain"></div>
+  <div class="container-bayou relative">
+    <div class="max-w-3xl reveal">
+      <span class="line-rule block mb-5"></span>
+      <h2 data-i18n="solutionHeading" class="font-display font-semibold text-3xl md:text-[2.7rem] leading-[1.15] tracking-[-0.01em]">
+        BaYou — это ваш <span class="italic text-gradient-gold">второй администратор</span>, который не уходит в отпуск
+      </h2>
+      <p data-i18n="solutionDesc" class="mt-7 text-lg text-cream-50/75 leading-relaxed max-w-2xl">
+        Мы объединили всё, что нужно хостел-оператору, в одну систему. Работает на телефоне, планшете, компьютере. Работает на казахстанском рынке — с Kaspi, Halyk, E-Qонақ.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOCK 4 — FEATURES ============ -->
+<section id="features" class="bg-cream-50 py-20 md:py-28">
+  <div class="container-bayou">
+    <div class="max-w-xl reveal">
+      <span class="line-rule block mb-5"></span>
+      <h2 data-i18n="featuresHeading" class="font-display font-semibold text-3xl md:text-[2.6rem] leading-tight tracking-[-0.01em] text-navy-950">Один экран вместо шести приложений</h2>
+    </div>
+
+    <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="reveal ring-card bg-white rounded-2xl p-7 border border-navy-950/5 card-elevated">
+        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gold-500/15 text-gold-600 mb-6"><svg class="w-6 h-6" aria-hidden="true"><use href="#i-bed"/></svg></div>
+        <h3 data-i18n="feature1Title" class="font-display font-semibold text-lg text-navy-950 mb-2">Система управления номерами</h3>
+        <p data-i18n="feature1Desc" class="text-[15px] leading-relaxed text-navy-950/65">Наглядная шахматка броней. Кровати, номера, сезонные цены — всё в реальном времени. Никаких двойных броней.</p>
+      </div>
+      <div class="reveal ring-card bg-white rounded-2xl p-7 border border-navy-950/5 card-elevated" style="transition-delay:.06s">
+        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gold-500/15 text-gold-600 mb-6"><svg class="w-6 h-6" aria-hidden="true"><use href="#i-bot"/></svg></div>
+        <h3 data-i18n="feature2Title" class="font-display font-semibold text-lg text-navy-950 mb-2">AI-чатбот</h3>
+        <p data-i18n="feature2Desc" class="text-[15px] leading-relaxed text-navy-950/65">Отвечает гостям в WhatsApp и Instagram 24/7. Принимает бронь, отвечает на вопросы, подтверждает оплату — без вас.</p>
+      </div>
+      <div class="reveal ring-card bg-white rounded-2xl p-7 border border-navy-950/5 card-elevated" style="transition-delay:.12s">
+        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gold-500/15 text-gold-600 mb-6"><svg class="w-6 h-6" aria-hidden="true"><use href="#i-block"/></svg></div>
+        <h3 data-i18n="feature3Title" class="font-display font-semibold text-lg text-navy-950 mb-2">Чёрный список</h3>
+        <p data-i18n="feature3Desc" class="text-[15px] leading-relaxed text-navy-950/65">База проблемных гостей по всему Казахстану. Видите предупреждение ещё до заселения — защищаете хостел до инцидента.</p>
+      </div>
+      <div class="reveal ring-card bg-white rounded-2xl p-7 border border-navy-950/5 card-elevated" style="transition-delay:.18s">
+        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gold-500/15 text-gold-600 mb-6"><svg class="w-6 h-6" aria-hidden="true"><use href="#i-card"/></svg></div>
+        <h3 data-i18n="feature4Title" class="font-display font-semibold text-lg text-navy-950 mb-2">Kaspi / Halyk</h3>
+        <p data-i18n="feature4Desc" class="text-[15px] leading-relaxed text-navy-950/65">Принимайте оплату через QR, карту, перевод. Всё автоматически фиксируется в системе.</p>
+      </div>
+      <div class="reveal ring-card bg-white rounded-2xl p-7 border border-navy-950/5 card-elevated" style="transition-delay:.24s">
+        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gold-500/15 text-gold-600 mb-6"><svg class="w-6 h-6" aria-hidden="true"><use href="#i-doc"/></svg></div>
+        <h3 data-i18n="feature5Title" class="font-display font-semibold text-lg text-navy-950 mb-2">E-Qонақ автоматически</h3>
+        <p data-i18n="feature5Desc" class="text-[15px] leading-relaxed text-navy-950/65">Регистрация иностранных гостей за 2 минуты. Система заполняет данные, вы только подтверждаете.</p>
+      </div>
+      <div class="reveal ring-card bg-white rounded-2xl p-7 border border-navy-950/5 card-elevated" style="transition-delay:.3s">
+        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gold-500/15 text-gold-600 mb-6"><svg class="w-6 h-6" aria-hidden="true"><use href="#i-chart"/></svg></div>
+        <h3 data-i18n="feature6Title" class="font-display font-semibold text-lg text-navy-950 mb-2">Финансовая аналитика</h3>
+        <p data-i18n="feature6Desc" class="text-[15px] leading-relaxed text-navy-950/65">Сколько заработали сегодня, за неделю, за месяц. По типам кроватей, по каналам продаж. Без Excel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOCK 5 — HOW IT WORKS ============ -->
+<section id="how" class="bg-cream-100 py-20 md:py-28">
+  <div class="container-bayou">
+    <div class="max-w-xl reveal">
+      <span class="line-rule block mb-5"></span>
+      <h2 data-i18n="howHeading" class="font-display font-semibold text-3xl md:text-[2.6rem] leading-tight tracking-[-0.01em] text-navy-950">Запустить BaYou — проще, чем кажется</h2>
+    </div>
+
+    <div class="mt-14 grid md:grid-cols-3 gap-10 md:gap-8 relative">
+      <div class="hidden md:block absolute top-7 left-[16.6%] right-[16.6%] h-px bg-navy-950/15"></div>
+
+      <div class="reveal relative">
+        <div class="flex items-center justify-center w-14 h-14 rounded-full bg-navy-950 text-gold-400 font-display text-xl font-semibold relative z-10">01</div>
+        <h3 data-i18n="how1Title" class="font-display font-semibold text-xl text-navy-950 mt-6 mb-2">Регистрация <span class="text-navy-950/45 text-base font-sans font-normal">· 5 минут</span></h3>
+        <p data-i18n="how1Desc" class="text-[15px] leading-relaxed text-navy-950/65">Вводите данные хостела, добавляете номера и кровати. Мы помогаем на каждом шаге.</p>
+      </div>
+      <div class="reveal relative" style="transition-delay:.1s">
+        <div class="flex items-center justify-center w-14 h-14 rounded-full bg-navy-950 text-gold-400 font-display text-xl font-semibold relative z-10">02</div>
+        <h3 data-i18n="how2Title" class="font-display font-semibold text-xl text-navy-950 mt-6 mb-2">Настройка <span class="text-navy-950/45 text-base font-sans font-normal">· 1 день</span></h3>
+        <p data-i18n="how2Desc" class="text-[15px] leading-relaxed text-navy-950/65">Подключаете Kaspi/Halyk, настраиваете чат-бот, переносите существующие брони. Наша команда рядом.</p>
+      </div>
+      <div class="reveal relative" style="transition-delay:.2s">
+        <div class="flex items-center justify-center w-14 h-14 rounded-full bg-navy-950 text-gold-400 font-display text-xl font-semibold relative z-10">03</div>
+        <h3 data-i18n="how3Title" class="font-display font-semibold text-xl text-navy-950 mt-6 mb-2">Работаете <span class="text-navy-950/45 text-base font-sans font-normal">· сразу</span></h3>
+        <p data-i18n="how3Desc" class="text-[15px] leading-relaxed text-navy-950/65">Принимаете брони, регистрируете гостей, видите выручку — всё в одном окне.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOCK 6 — SOCIAL PROOF ============ -->
+<section id="proof" class="relative bg-radial-navy text-cream-50 py-20 md:py-28 overflow-hidden">
+  <div class="grain"></div>
+  <div class="container-bayou relative">
+    <div class="max-w-xl reveal">
+      <span class="line-rule block mb-5"></span>
+      <h2 data-i18n="proofHeading" class="font-display font-semibold text-3xl md:text-[2.6rem] leading-tight tracking-[-0.01em]">Хостелы Казахстана уже управляют умнее</h2>
+    </div>
+
+    <!-- stats -->
+    <div class="mt-12 grid grid-cols-3 gap-5 max-w-2xl reveal">
+      <div>
+        <p class="font-display text-3xl md:text-4xl font-semibold text-gradient-gold">50+</p>
+        <p data-i18n="stat1Label" class="mt-1 text-sm text-cream-50/60">хостелов подключены</p>
+      </div>
+      <div>
+        <p class="font-display text-3xl md:text-4xl font-semibold text-gradient-gold">2 мин</p>
+        <p data-i18n="stat2Label" class="mt-1 text-sm text-cream-50/60">регистрация в E-Qонақ</p>
+      </div>
+      <div>
+        <p class="font-display text-3xl md:text-4xl font-semibold text-gradient-gold">0</p>
+        <p data-i18n="stat3Label" class="mt-1 text-sm text-cream-50/60">двойных броней</p>
+      </div>
+    </div>
+
+    <!-- testimonial carousel -->
+    <div class="mt-14 reveal" data-carousel>
+      <div class="flex items-center justify-between mb-6">
+        <p data-i18n="testimonialsLabel" class="text-xs uppercase tracking-wider text-cream-50/40">Демо-отзывы · обновим на реальные после первых клиентов</p>
+        <div class="hidden sm:flex items-center gap-3">
+          <button type="button" data-prev class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:prevTestimonial" aria-label="Предыдущий отзыв"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
+          <button type="button" data-next class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:nextTestimonial" aria-label="Следующий отзыв"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+        </div>
+      </div>
+
+      <div class="carousel-viewport -mx-2">
+        <div class="carousel-track" data-track>
+
+          <article class="shrink-0 px-2" style="flex:0 0 100%;">
+            <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm">
+              <p data-i18n="testimonial1Quote" class="font-display italic text-lg md:text-xl leading-relaxed text-cream-50/90">«Раньше я тратил 3 часа утром просто на то, чтобы понять, кто заселён. Сейчас открываю BaYou — и всё видно за 30 секунд.»</p>
+              <p class="mt-6 text-sm text-cream-50/55">— Әли Нұрланов, «Достар Hostel», Алматы</p>
+            </div>
+          </article>
+
+          <article class="shrink-0 px-2" style="flex:0 0 100%;">
+            <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm">
+              <p data-i18n="testimonial2Quote" class="font-display italic text-lg md:text-xl leading-relaxed text-cream-50/90">«E-Qонақ всегда был головной болью. Теперь это занимает 2 минуты. Без ошибок.»</p>
+              <p class="mt-6 text-sm text-cream-50/55">— Динара Сейітова, «Sunrise Hostel», Астана</p>
+            </div>
+          </article>
+
+          <article class="shrink-0 px-2" style="flex:0 0 100%;">
+            <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm">
+              <p data-i18n="testimonial3Quote" class="font-display italic text-lg md:text-xl leading-relaxed text-cream-50/90">«Kaspi и Halyk теперь сами падают в кассу. Я наконец вижу, сколько хостел зарабатывает в реальном времени.»</p>
+              <p class="mt-6 text-sm text-cream-50/55">— Ермек Жақсыбеков, «Almaty Lights Hostel», Алматы</p>
+            </div>
+          </article>
+
+          <article class="shrink-0 px-2" style="flex:0 0 100%;">
+            <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm">
+              <p data-i18n="testimonial4Quote" class="font-display italic text-lg md:text-xl leading-relaxed text-cream-50/90">«Запустились за один день. Без карты, без обязательств — а сейчас не представляю работу без BaYou.»</p>
+              <p class="mt-6 text-sm text-cream-50/55">— Айгерім Төлеген, «Shymkent Travel Hostel», Шымкент</p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <div class="flex sm:hidden items-center gap-3 mt-6">
+        <button type="button" data-prev class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:prevTestimonial" aria-label="Предыдущий отзыв"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
+        <button type="button" data-next class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:nextTestimonial" aria-label="Следующий отзыв"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+      </div>
+    </div>
+
+    <!-- gallery carousel -->
+    <div class="mt-20 reveal" data-carousel>
+      <div class="flex items-center justify-between mb-6">
+        <p data-i18n="galleryLabel" class="text-xs uppercase tracking-wider text-cream-50/40">Хостелы на платформе BaYou · временные фото</p>
+        <div class="hidden sm:flex items-center gap-3">
+          <button type="button" data-prev class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:prevPhoto" aria-label="Предыдущее фото"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
+          <button type="button" data-next class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:nextPhoto" aria-label="Следующее фото"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+        </div>
+      </div>
+
+      <div class="carousel-viewport -mx-2">
+        <div class="carousel-track" data-track>
+          <figure class="shrink-0 px-2" style="flex:0 0 78%;">
+            <div class="rounded-2xl overflow-hidden aspect-[4/3]"><img src="assets/gallery/gallery-1.jpg" data-i18n-attr="alt:galleryAlt1" alt="Капсульный хостел, общий коридор" class="w-full h-full img-cover"></div>
+          </figure>
+          <figure class="shrink-0 px-2" style="flex:0 0 78%;">
+            <div class="rounded-2xl overflow-hidden aspect-[4/3]"><img src="assets/gallery/gallery-2.jpg" data-i18n-attr="alt:galleryAlt2" alt="Деревянный спальный модуль хостела" class="w-full h-full img-cover"></div>
+          </figure>
+          <figure class="shrink-0 px-2" style="flex:0 0 78%;">
+            <div class="rounded-2xl overflow-hidden aspect-[4/3]"><img src="assets/gallery/gallery-3.jpg" data-i18n-attr="alt:galleryAlt3" alt="Капсулы Urbanpod" class="w-full h-full img-cover"></div>
+          </figure>
+          <figure class="shrink-0 px-2" style="flex:0 0 78%;">
+            <div class="rounded-2xl overflow-hidden aspect-[4/3]"><img src="assets/gallery/gallery-4.jpg" data-i18n-attr="alt:galleryAlt4" alt="Хостел с двухъярусными кроватями" class="w-full h-full img-cover"></div>
+          </figure>
+          <figure class="shrink-0 px-2" style="flex:0 0 78%;">
+            <div class="rounded-2xl overflow-hidden aspect-[4/3]"><img src="assets/gallery/gallery-5.jpg" data-i18n-attr="alt:galleryAlt5" alt="Общая комната хостела с синими кроватями" class="w-full h-full img-cover"></div>
+          </figure>
+          <figure class="shrink-0 px-2" style="flex:0 0 78%;">
+            <div class="rounded-2xl overflow-hidden aspect-[4/3]"><img src="assets/gallery/gallery-6.jpg" data-i18n-attr="alt:galleryAlt6" alt="Современный номер хостела с рабочими местами" class="w-full h-full img-cover"></div>
+          </figure>
+        </div>
+      </div>
+
+      <div class="flex sm:hidden items-center gap-3 mt-6">
+        <button type="button" data-prev class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:prevPhoto" aria-label="Предыдущее фото"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
+        <button type="button" data-next class="carousel-arrow bg-white/5 border border-white/20 text-cream-50" data-i18n-attr="aria-label:nextPhoto" aria-label="Следующее фото"><svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOCK 7 — PRICING ============ -->
+<section id="pricing" class="bg-cream-50 py-20 md:py-28">
+  <div class="container-bayou">
+    <div class="max-w-xl reveal">
+      <span class="line-rule block mb-5"></span>
+      <h2 data-i18n="pricingHeading" class="font-display font-semibold text-3xl md:text-[2.6rem] leading-tight tracking-[-0.01em] text-navy-950">Прозрачные тарифы. Никаких скрытых платежей.</h2>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-3 gap-6 items-start">
+
+      <div class="reveal rounded-2xl border border-navy-950/10 bg-white p-8 card-elevated">
+        <h3 class="font-display font-semibold text-xl text-navy-950">Старт</h3>
+        <p data-i18n="plan1Subtitle" class="mt-1 text-sm text-navy-950/55">до 20 кроватей</p>
+        <p class="mt-6 flex items-baseline gap-1">
+          <span class="font-display text-4xl font-semibold text-navy-950">7 900 ₸</span>
+          <span data-i18n="perMonth" class="text-navy-950/50 text-sm">/ мес</span>
+        </p>
+        <a href="#cta-final" data-i18n="planCta" class="btn-navy mt-7 inline-flex w-full items-center justify-center rounded-full px-5 py-3.5 font-semibold text-sm">Попробовать бесплатно</a>
+        <ul class="mt-8 space-y-3 text-[15px] text-navy-950/75">
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featPms">PMS — бронирование</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featEqonaq">E-Qонақ</span></li>
+          <li class="flex gap-3 text-navy-950/35"><svg class="w-5 h-5 shrink-0" aria-hidden="true"><use href="#i-dash"/></svg><span data-i18n="featChatbot">AI-чатбот</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featAnalyticsBasic">Аналитика — базовая</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featSupportEmail">Поддержка — email</span></li>
+        </ul>
+      </div>
+
+      <div class="reveal relative rounded-2xl border-2 border-gold-500 bg-navy-950 text-cream-50 p-8 shadow-gold md:-translate-y-3" style="transition-delay:.08s">
+        <span data-i18n="popularBadge" class="absolute -top-3.5 left-1/2 -translate-x-1/2 pill bg-gold-500 border-gold-500 text-navy-950 text-xs font-semibold px-4 py-1 rounded-full">Популярный</span>
+        <h3 class="font-display font-semibold text-xl">Бизнес</h3>
+        <p data-i18n="plan2Subtitle" class="mt-1 text-sm text-cream-50/55">до 50 кроватей</p>
+        <p class="mt-6 flex items-baseline gap-1">
+          <span class="font-display text-4xl font-semibold text-gradient-gold">15 900 ₸</span>
+          <span data-i18n="perMonth" class="text-cream-50/50 text-sm">/ мес</span>
+        </p>
+        <a href="#cta-final" data-i18n="planCta" class="btn-gold mt-7 inline-flex w-full items-center justify-center rounded-full px-5 py-3.5 font-semibold text-sm">Попробовать бесплатно</a>
+        <ul class="mt-8 space-y-3 text-[15px] text-cream-50/85">
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-400 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featPms">PMS — бронирование</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-400 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featEqonaq">E-Qонақ</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-400 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featChatbot">AI-чатбот</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-400 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featAnalyticsFull">Аналитика — полная</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-400 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featSupportChat">Поддержка — чат</span></li>
+        </ul>
+      </div>
+
+      <div class="reveal rounded-2xl border border-navy-950/10 bg-white p-8 card-elevated" style="transition-delay:.16s">
+        <h3 class="font-display font-semibold text-xl text-navy-950">Профи</h3>
+        <p data-i18n="plan3Subtitle" class="mt-1 text-sm text-navy-950/55">неограниченно кроватей</p>
+        <p class="mt-6 flex items-baseline gap-1">
+          <span class="font-display text-4xl font-semibold text-navy-950">29 900 ₸</span>
+          <span data-i18n="perMonth" class="text-navy-950/50 text-sm">/ мес</span>
+        </p>
+        <a href="#cta-final" data-i18n="planCta" class="btn-navy mt-7 inline-flex w-full items-center justify-center rounded-full px-5 py-3.5 font-semibold text-sm">Попробовать бесплатно</a>
+        <ul class="mt-8 space-y-3 text-[15px] text-navy-950/75">
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featPms">PMS — бронирование</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featEqonaq">E-Qонақ</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featChatbot">AI-чатбот</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featAnalyticsFull">Аналитика — полная</span></li>
+          <li class="flex gap-3"><svg class="w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="featSupportPriority">Поддержка — приоритет + менеджер</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <p data-i18n="pricingNote" class="reveal mt-8 text-sm text-navy-950/50 max-w-2xl">Все тарифы включают E-Qонақ и казахстанские платёжные системы. НДС включён. Цены указаны для запуска и могут уточняться менеджером.</p>
+  </div>
+</section>
+
+<!-- ============ BLOCK 8 — FAQ ============ -->
+<section id="faq" class="bg-cream-100 py-20 md:py-28">
+  <div class="container-bayou">
+    <div class="max-w-xl reveal">
+      <span class="line-rule block mb-5"></span>
+      <h2 data-i18n="faqHeading" class="font-display font-semibold text-3xl md:text-[2.6rem] leading-tight tracking-[-0.01em] text-navy-950">Часто спрашивают</h2>
+    </div>
+
+    <div class="mt-12 max-w-3xl space-y-3" data-faq>
+
+      <div class="faq-item reveal rounded-2xl bg-white border border-navy-950/8 card-elevated" data-open="true">
+        <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-6 py-5" aria-expanded="true">
+          <span data-i18n="faqQ1" class="font-display font-medium text-lg text-navy-950">Нужно ли устанавливать что-то на компьютер?</span>
+          <svg class="faq-chevron w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-plus"/></svg>
+        </button>
+        <div class="faq-panel-wrap"><div class="faq-panel-inner"><p data-i18n="faqA1" class="px-6 pb-5 text-[15px] leading-relaxed text-navy-950/70">Нет. BaYou работает в браузере и на телефоне. Зашли — работаете.</p></div></div>
+      </div>
+
+      <div class="faq-item reveal rounded-2xl bg-white border border-navy-950/8 card-elevated" data-open="false">
+        <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-6 py-5" aria-expanded="false">
+          <span data-i18n="faqQ2" class="font-display font-medium text-lg text-navy-950">Мои данные в безопасности?</span>
+          <svg class="faq-chevron w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-plus"/></svg>
+        </button>
+        <div class="faq-panel-wrap"><div class="faq-panel-inner"><p data-i18n="faqA2" class="px-6 pb-5 text-[15px] leading-relaxed text-navy-950/70">Серверы в Казахстане. Данные соответствуют требованиям МЦРИАП РК.</p></div></div>
+      </div>
+
+      <div class="faq-item reveal rounded-2xl bg-white border border-navy-950/8 card-elevated" data-open="false">
+        <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-6 py-5" aria-expanded="false">
+          <span data-i18n="faqQ3" class="font-display font-medium text-lg text-navy-950">Что если у меня нет интернета?</span>
+          <svg class="faq-chevron w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-plus"/></svg>
+        </button>
+        <div class="faq-panel-wrap"><div class="faq-panel-inner"><p data-i18n="faqA3" class="px-6 pb-5 text-[15px] leading-relaxed text-navy-950/70">Базовые функции работают офлайн. При восстановлении соединения данные синхронизируются.</p></div></div>
+      </div>
+
+      <div class="faq-item reveal rounded-2xl bg-white border border-navy-950/8 card-elevated" data-open="false">
+        <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-6 py-5" aria-expanded="false">
+          <span data-i18n="faqQ4" class="font-display font-medium text-lg text-navy-950">Как перенести старые брони?</span>
+          <svg class="faq-chevron w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-plus"/></svg>
+        </button>
+        <div class="faq-panel-wrap"><div class="faq-panel-inner"><p data-i18n="faqA4" class="px-6 pb-5 text-[15px] leading-relaxed text-navy-950/70">Наша команда помогает с переносом данных при подключении. Это входит в онбординг.</p></div></div>
+      </div>
+
+      <div class="faq-item reveal rounded-2xl bg-white border border-navy-950/8 card-elevated" data-open="false">
+        <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-6 py-5" aria-expanded="false">
+          <span data-i18n="faqQ5" class="font-display font-medium text-lg text-navy-950">Работает ли с Booking.com и Airbnb?</span>
+          <svg class="faq-chevron w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-plus"/></svg>
+        </button>
+        <div class="faq-panel-wrap"><div class="faq-panel-inner"><p data-i18n="faqA5" class="px-6 pb-5 text-[15px] leading-relaxed text-navy-950/70">Интеграция с OTA-каналами в разработке. Уже доступно: прямые брони, Kaspi Pay, E-Qонақ.</p></div></div>
+      </div>
+
+      <div class="faq-item reveal rounded-2xl bg-white border border-navy-950/8 card-elevated" data-open="false">
+        <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-6 py-5" aria-expanded="false">
+          <span data-i18n="faqQ6" class="font-display font-medium text-lg text-navy-950">Есть ли привязка к договору на год?</span>
+          <svg class="faq-chevron w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-plus"/></svg>
+        </button>
+        <div class="faq-panel-wrap"><div class="faq-panel-inner"><p data-i18n="faqA6" class="px-6 pb-5 text-[15px] leading-relaxed text-navy-950/70">Нет. Оплата помесячная, без долгосрочных договоров. Отменить подписку можно в любой момент в один клик в личном кабинете.</p></div></div>
+      </div>
+
+      <div class="faq-item reveal rounded-2xl bg-white border border-navy-950/8 card-elevated" data-open="false">
+        <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-6 py-5" aria-expanded="false">
+          <span data-i18n="faqQ7" class="font-display font-medium text-lg text-navy-950">Что будет с моими данными, если я перестану платить?</span>
+          <svg class="faq-chevron w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-plus"/></svg>
+        </button>
+        <div class="faq-panel-wrap"><div class="faq-panel-inner"><p data-i18n="faqA7" class="px-6 pb-5 text-[15px] leading-relaxed text-navy-950/70">Вы можете выгрузить все брони, гостей и финансовые отчёты в любой момент. Доступ к выгрузке данных сохраняется 90 дней после отмены подписки.</p></div></div>
+      </div>
+
+      <div class="faq-item reveal rounded-2xl bg-white border border-navy-950/8 card-elevated" data-open="false">
+        <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-6 py-5" aria-expanded="false">
+          <span data-i18n="faqQ8" class="font-display font-medium text-lg text-navy-950">Можно ли управлять несколькими хостелами из одного аккаунта?</span>
+          <svg class="faq-chevron w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-plus"/></svg>
+        </button>
+        <div class="faq-panel-wrap"><div class="faq-panel-inner"><p data-i18n="faqA8" class="px-6 pb-5 text-[15px] leading-relaxed text-navy-950/70">Да. Тариф «Профи» поддерживает несколько объектов и неограниченное количество кроватей из одного личного кабинета — удобно для сетей хостелов.</p></div></div>
+      </div>
+
+      <div class="faq-item reveal rounded-2xl bg-white border border-navy-950/8 card-elevated" data-open="false">
+        <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-6 py-5" aria-expanded="false">
+          <span data-i18n="faqQ9" class="font-display font-medium text-lg text-navy-950">Сколько стоит обучение администраторов?</span>
+          <svg class="faq-chevron w-5 h-5 text-gold-600 shrink-0" aria-hidden="true"><use href="#i-plus"/></svg>
+        </button>
+        <div class="faq-panel-wrap"><div class="faq-panel-inner"><p data-i18n="faqA9" class="px-6 pb-5 text-[15px] leading-relaxed text-navy-950/70">Бесплатно. Онбординг и обучение персонала включены в любой тариф — наша команда подключает и обучает администраторов на старте.</p></div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOCK 9 — FINAL CTA ============ -->
+<section id="cta-final" class="relative bg-radial-navy text-cream-50 py-24 md:py-32 overflow-hidden">
+  <div class="grain"></div>
+  <div class="container-bayou relative text-center max-w-2xl mx-auto reveal">
+    <h2 data-i18n="ctaHeading" class="font-display font-semibold text-3xl md:text-5xl leading-tight tracking-[-0.01em]">Попробуйте 1 ай · 30 күн бесплатно</h2>
+    <p data-i18n="ctaSub" class="mt-5 text-lg text-cream-50/75">Без карты. Без обязательств. Просто посмотрите, как работает хостел без хаоса.</p>
+    <a href="#lead-form" data-i18n="ctaButton" class="btn-gold mt-9 inline-flex items-center justify-center rounded-full px-9 py-4 font-semibold text-base">Начать бесплатно</a>
+    <p data-i18n="ctaMicrocopy" class="mt-6 text-sm text-cream-50/50">Уже более 50 хостелов Казахстана управляют через BaYou. Присоединяйтесь.</p>
+  </div>
+</section>
+
+<!-- ============ LEAD / CONTACT ============ -->
+<section id="lead-form" class="bg-cream-50 py-20 md:py-24">
+  <div class="container-bayou">
+    <div class="rounded-3xl bg-navy-950 text-cream-50 px-7 md:px-14 py-12 md:py-16 grid md:grid-cols-2 gap-10 items-center reveal overflow-hidden relative">
+      <div class="grain"></div>
+      <div class="relative">
+        <span class="line-rule block mb-5"></span>
+        <h2 data-i18n="leadHeading" class="font-display font-semibold text-2xl md:text-3xl leading-tight">Оставьте заявку — подключим за один день</h2>
+        <p data-i18n="leadSub" class="mt-4 text-cream-50/70 max-w-md">Напишите нам в WhatsApp или позвоните — поможем настроить демо-доступ и перенести брони бесплатно.</p>
+      </div>
+      <div class="relative flex flex-col gap-4">
+        <a href="https://wa.me/77086279544?text=Здравствуйте!%20Хочу%20попробовать%20BaYou%20бесплатно." target="_blank" rel="noopener" class="btn-gold flex items-center justify-center gap-3 rounded-full px-6 py-4 font-semibold">
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#i-chat"/></svg> <span data-i18n="leadWhatsapp">Написать в WhatsApp</span>
+        </a>
+        <a href="tel:+77086279544" class="btn-ghost-cream flex items-center justify-center gap-3 rounded-full px-6 py-4 font-semibold">
+          <svg class="w-5 h-5" aria-hidden="true"><use href="#i-phone"/></svg> +7 708 627 9544
+        </a>
+        <a href="mailto:minaikhan.saltanat@gmail.com" class="flex items-center justify-center gap-2 text-sm text-cream-50/55 hover:text-cream-50/85 transition-colors duration-200 pt-1">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#i-mail"/></svg> minaikhan.saltanat@gmail.com
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOCK 10 — FOOTER ============ -->
+<footer class="bg-navy-950 text-cream-50/70">
+  <div class="container-bayou py-16">
+    <div class="grid md:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-12">
+      <div>
+        <img src="assets/logo.png" alt="BaYou" class="h-9 w-auto" style="filter:brightness(0) invert(1) opacity(.95);">
+        <p data-i18n="footerTagline" class="mt-5 text-sm leading-relaxed max-w-xs text-cream-50/55">Первая казахстанская SaaS-платформа для управления хостелами. Сделано в Казахстане, для казахстанского рынка.</p>
+        <div class="mt-6 flex items-center gap-3">
+          <span class="pill rounded-full px-3 py-1 text-xs bg-white/5 border-white/15 text-cream-50/70">Kaspi Pay</span>
+          <span class="pill rounded-full px-3 py-1 text-xs bg-white/5 border-white/15 text-cream-50/70">Halyk Bank</span>
+          <span class="pill rounded-full px-3 py-1 text-xs bg-white/5 border-white/15 text-cream-50/70">E-Qонақ</span>
+        </div>
+      </div>
+
+      <div>
+        <p data-i18n="footerColPlatform" class="font-display text-cream-50 font-medium mb-4">Платформа</p>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="#features" data-i18n="navFeatures" class="hover:text-cream-50 transition-colors duration-200">Возможности</a></li>
+          <li><a href="#pricing" data-i18n="navPricing" class="hover:text-cream-50 transition-colors duration-200">Тарифы</a></li>
+          <li><a href="#proof" data-i18n="navProof" class="hover:text-cream-50 transition-colors duration-200">Отзывы</a></li>
+          <li><a href="#faq" data-i18n="navFaqFull" class="hover:text-cream-50 transition-colors duration-200">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p data-i18n="footerColLegal" class="font-display text-cream-50 font-medium mb-4">Юридическое</p>
+        <ul class="space-y-2.5 text-sm">
+          <li>ТОО «Q4 EXPORT»</li>
+          <li data-i18n="footerBin">БИН: уточняется</li>
+          <li><a href="#" data-i18n="footerPrivacy" class="hover:text-cream-50 transition-colors duration-200">Политика конфиденциальности</a></li>
+          <li><a href="#" data-i18n="footerOffer" class="hover:text-cream-50 transition-colors duration-200">Публичная оферта</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p data-i18n="footerColContacts" class="font-display text-cream-50 font-medium mb-4">Контакты</p>
+        <ul class="space-y-3 text-sm">
+          <li><a href="tel:+77086279544" class="flex items-center gap-2 hover:text-cream-50 transition-colors duration-200"><svg class="w-4 h-4 shrink-0" aria-hidden="true"><use href="#i-phone"/></svg>+7 708 627 9544</a></li>
+          <li><a href="https://wa.me/77086279544" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-cream-50 transition-colors duration-200"><svg class="w-4 h-4 shrink-0" aria-hidden="true"><use href="#i-chat"/></svg>WhatsApp</a></li>
+          <li><a href="mailto:minaikhan.saltanat@gmail.com" class="flex items-center gap-2 hover:text-cream-50 transition-colors duration-200"><svg class="w-4 h-4 shrink-0" aria-hidden="true"><use href="#i-mail"/></svg>minaikhan.saltanat@gmail.com</a></li>
+          <li class="flex items-center gap-2 text-cream-50/45"><svg class="w-4 h-4 shrink-0" aria-hidden="true"><use href="#i-pin"/></svg><span data-i18n="footerLocation">bayou.kz · Казахстан</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-14 pt-8 border-t border-white/10 flex flex-col sm:flex-row gap-3 justify-between text-xs text-cream-50/40">
+      <p data-i18n="footerCopyright">© 2026 BaYou — ТОО «Q4 EXPORT». Все права защищены.</p>
+      <p data-i18n="footerAiNote">Документ и сайт подготовлены с использованием AI-инструментов.</p>
+    </div>
+  </div>
+</footer>
+
+<button id="scroll-top" type="button" data-i18n-attr="aria-label:scrollTopLabel" aria-label="Наверх" class="fixed bottom-6 right-6 z-30 w-12 h-12 rounded-full bg-navy-950 text-gold-400 shadow-soft flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+  <svg class="w-5 h-5 -rotate-90" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+</button>
+
+</main>
+
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Bilingual content (RU default / KK switch) ---------- */
+  var I18N = {
+    ru: {
+      metaTitle: 'BaYou — Система управления хостелом в Казахстане | PMS + E-Qонақ + Kaspi',
+      metaDescription: 'Управляйте хостелом в одной системе: бронирование, E-Qонақ, Kaspi-оплаты, AI-чатбот. Попробуйте бесплатно 1 ай · 30 күн. Сделано для Казахстана.',
+      navHomeLabel: 'BaYou — на главную',
+      logoAlt: 'BaYou — Hostel Management Platform',
+      langSwitchLabel: 'Переключить язык',
+      menuOpenLabel: 'Открыть меню',
+      navFeatures: 'Возможности',
+      navHow: 'Как это работает',
+      navProof: 'Отзывы',
+      navPricing: 'Тарифы',
+      navFaq: 'FAQ',
+      navFaqFull: 'FAQ',
+      navCta: 'Начать бесплатно',
+      drawerCta: 'Начать бесплатно · 1 ай',
+      heroKicker: 'Вносите гостей вручную и теряете брони в WhatsApp?',
+      heroH1: 'Управляйте хостелом —<br><span class="text-gradient-gold italic">не хаосом</span>',
+      heroSub: 'BaYou — первая казахстанская платформа для хостелов: от бронирования до E&#8209;Qонақ за одно утро.',
+      heroPrimaryCta: 'Попробовать бесплатно · 1 ай',
+      heroSecondaryCta: 'Смотреть демо · 4 минуты',
+      heroMicrocopy: 'Без карты. Без договора. Отмена в один клик.',
+      heroTrustLabel: 'Нативно работает с',
+      problemHeading: 'Узнаёте свой будний день?',
+      problem1Title: '«Всё в блокноте и WhatsApp»',
+      problem1Desc: 'Гость звонит → вы вносите вручную → другой гость уже забронировал эту кровать. Двойная бронь. Скандал. Возврат.',
+      problem2Title: '«E-Qонақ — каждый раз заново»',
+      problem2Desc: 'Регистрация иностранца занимает 20 минут. Проверяющий пришёл — документы не готовы. Штраф.',
+      problem3Title: '«Где деньги за месяц?»',
+      problem3Desc: 'Kaspi пришёл, наличные в кассе, часть безналом. Сколько реально заработали — узнаёте в конце месяца, если успеваете посчитать.',
+      solutionHeading: 'BaYou — это ваш <span class="italic text-gradient-gold">второй администратор</span>, который не уходит в отпуск',
+      solutionDesc: 'Мы объединили всё, что нужно хостел-оператору, в одну систему. Работает на телефоне, планшете, компьютере. Работает на казахстанском рынке — с Kaspi, Halyk, E-Qонақ.',
+      featuresHeading: 'Один экран вместо шести приложений',
+      feature1Title: 'Система управления номерами',
+      feature1Desc: 'Наглядная шахматка броней. Кровати, номера, сезонные цены — всё в реальном времени. Никаких двойных броней.',
+      feature2Title: 'AI-чатбот',
+      feature2Desc: 'Отвечает гостям в WhatsApp и Instagram 24/7. Принимает бронь, отвечает на вопросы, подтверждает оплату — без вас.',
+      feature3Title: 'Чёрный список',
+      feature3Desc: 'База проблемных гостей по всему Казахстану. Видите предупреждение ещё до заселения — защищаете хостел до инцидента.',
+      feature4Title: 'Kaspi / Halyk',
+      feature4Desc: 'Принимайте оплату через QR, карту, перевод. Всё автоматически фиксируется в системе.',
+      feature5Title: 'E-Qонақ автоматически',
+      feature5Desc: 'Регистрация иностранных гостей за 2 минуты. Система заполняет данные, вы только подтверждаете.',
+      feature6Title: 'Финансовая аналитика',
+      feature6Desc: 'Сколько заработали сегодня, за неделю, за месяц. По типам кроватей, по каналам продаж. Без Excel.',
+      howHeading: 'Запустить BaYou — проще, чем кажется',
+      how1Title: 'Регистрация <span class="text-navy-950/45 text-base font-sans font-normal">· 5 минут</span>',
+      how1Desc: 'Вводите данные хостела, добавляете номера и кровати. Мы помогаем на каждом шаге.',
+      how2Title: 'Настройка <span class="text-navy-950/45 text-base font-sans font-normal">· 1 день</span>',
+      how2Desc: 'Подключаете Kaspi/Halyk, настраиваете чат-бот, переносите существующие брони. Наша команда рядом.',
+      how3Title: 'Работаете <span class="text-navy-950/45 text-base font-sans font-normal">· сразу</span>',
+      how3Desc: 'Принимаете брони, регистрируете гостей, видите выручку — всё в одном окне.',
+      proofHeading: 'Хостелы Казахстана уже управляют умнее',
+      stat1Label: 'хостелов подключены',
+      stat2Label: 'регистрация в E-Qонақ',
+      stat3Label: 'двойных броней',
+      testimonialsLabel: 'Демо-отзывы · обновим на реальные после первых клиентов',
+      prevTestimonial: 'Предыдущий отзыв',
+      nextTestimonial: 'Следующий отзыв',
+      testimonial1Quote: '«Раньше я тратил 3 часа утром просто на то, чтобы понять, кто заселён. Сейчас открываю BaYou — и всё видно за 30 секунд.»',
+      testimonial2Quote: '«E-Qонақ всегда был головной болью. Теперь это занимает 2 минуты. Без ошибок.»',
+      testimonial3Quote: '«Kaspi и Halyk теперь сами падают в кассу. Я наконец вижу, сколько хостел зарабатывает в реальном времени.»',
+      testimonial4Quote: '«Запустились за один день. Без карты, без обязательств — а сейчас не представляю работу без BaYou.»',
+      galleryLabel: 'Хостелы на платформе BaYou · временные фото',
+      prevPhoto: 'Предыдущее фото',
+      nextPhoto: 'Следующее фото',
+      galleryAlt1: 'Капсульный хостел, общий коридор',
+      galleryAlt2: 'Деревянный спальный модуль хостела',
+      galleryAlt3: 'Капсулы Urbanpod',
+      galleryAlt4: 'Хостел с двухъярусными кроватями',
+      galleryAlt5: 'Общая комната хостела с синими кроватями',
+      galleryAlt6: 'Современный номер хостела с рабочими местами',
+      pricingHeading: 'Прозрачные тарифы. Никаких скрытых платежей.',
+      plan1Subtitle: 'до 20 кроватей',
+      plan2Subtitle: 'до 50 кроватей',
+      plan3Subtitle: 'неограниченно кроватей',
+      perMonth: '/ мес',
+      planCta: 'Попробовать бесплатно',
+      popularBadge: 'Популярный',
+      featPms: 'PMS — бронирование',
+      featEqonaq: 'E-Qонақ',
+      featChatbot: 'AI-чатбот',
+      featAnalyticsBasic: 'Аналитика — базовая',
+      featAnalyticsFull: 'Аналитика — полная',
+      featSupportEmail: 'Поддержка — email',
+      featSupportChat: 'Поддержка — чат',
+      featSupportPriority: 'Поддержка — приоритет + менеджер',
+      pricingNote: 'Все тарифы включают E-Qонақ и казахстанские платёжные системы. НДС включён. Цены указаны для запуска и могут уточняться менеджером.',
+      faqHeading: 'Часто спрашивают',
+      faqQ1: 'Нужно ли устанавливать что-то на компьютер?',
+      faqA1: 'Нет. BaYou работает в браузере и на телефоне. Зашли — работаете.',
+      faqQ2: 'Мои данные в безопасности?',
+      faqA2: 'Серверы в Казахстане. Данные соответствуют требованиям МЦРИАП РК.',
+      faqQ3: 'Что если у меня нет интернета?',
+      faqA3: 'Базовые функции работают офлайн. При восстановлении соединения данные синхронизируются.',
+      faqQ4: 'Как перенести старые брони?',
+      faqA4: 'Наша команда помогает с переносом данных при подключении. Это входит в онбординг.',
+      faqQ5: 'Работает ли с Booking.com и Airbnb?',
+      faqA5: 'Интеграция с OTA-каналами в разработке. Уже доступно: прямые брони, Kaspi Pay, E-Qонақ.',
+      faqQ6: 'Есть ли привязка к договору на год?',
+      faqA6: 'Нет. Оплата помесячная, без долгосрочных договоров. Отменить подписку можно в любой момент в один клик в личном кабинете.',
+      faqQ7: 'Что будет с моими данными, если я перестану платить?',
+      faqA7: 'Вы можете выгрузить все брони, гостей и финансовые отчёты в любой момент. Доступ к выгрузке данных сохраняется 90 дней после отмены подписки.',
+      faqQ8: 'Можно ли управлять несколькими хостелами из одного аккаунта?',
+      faqA8: 'Да. Тариф «Профи» поддерживает несколько объектов и неограниченное количество кроватей из одного личного кабинета — удобно для сетей хостелов.',
+      faqQ9: 'Сколько стоит обучение администраторов?',
+      faqA9: 'Бесплатно. Онбординг и обучение персонала включены в любой тариф — наша команда подключает и обучает администраторов на старте.',
+      ctaHeading: 'Попробуйте 1 ай · 30 күн бесплатно',
+      ctaSub: 'Без карты. Без обязательств. Просто посмотрите, как работает хостел без хаоса.',
+      ctaButton: 'Начать бесплатно',
+      ctaMicrocopy: 'Уже более 50 хостелов Казахстана управляют через BaYou. Присоединяйтесь.',
+      leadHeading: 'Оставьте заявку — подключим за один день',
+      leadSub: 'Напишите нам в WhatsApp или позвоните — поможем настроить демо-доступ и перенести брони бесплатно.',
+      leadWhatsapp: 'Написать в WhatsApp',
+      footerTagline: 'Первая казахстанская SaaS-платформа для управления хостелами. Сделано в Казахстане, для казахстанского рынка.',
+      footerColPlatform: 'Платформа',
+      footerColLegal: 'Юридическое',
+      footerColContacts: 'Контакты',
+      footerBin: 'БИН: уточняется',
+      footerPrivacy: 'Политика конфиденциальности',
+      footerOffer: 'Публичная оферта',
+      footerLocation: 'bayou.kz · Казахстан',
+      footerCopyright: '© 2026 BaYou — ТОО «Q4 EXPORT». Все права защищены.',
+      footerAiNote: 'Документ и сайт подготовлены с использованием AI-инструментов.',
+      scrollTopLabel: 'Наверх'
+    },
+    kk: {
+      metaTitle: 'BaYou — Қазақстандағы хостелді басқару жүйесі | PMS + E-Qонақ + Kaspi',
+      metaDescription: 'Хостелді бір жүйеде басқарыңыз: брондау, E-Qонақ, Kaspi-төлемдер, AI-чатбот. 1 ай · 30 күн тегін сынап көріңіз. Қазақстан үшін жасалған.',
+      navHomeLabel: 'BaYou — басты бетке',
+      logoAlt: 'BaYou — хостелдерді басқару платформасы',
+      langSwitchLabel: 'Тілді ауыстыру',
+      menuOpenLabel: 'Мәзірді ашу',
+      navFeatures: 'Мүмкіндіктер',
+      navHow: 'Қалай жұмыс істейді',
+      navProof: 'Пікірлер',
+      navPricing: 'Тарифтер',
+      navFaq: 'FAQ',
+      navFaqFull: 'Сұрақ-жауап',
+      navCta: 'Тегін бастау',
+      drawerCta: 'Тегін бастау · 1 ай',
+      heroKicker: 'Қонақтарды қолмен тіркеп, брондарды WhatsApp-та жоғалтып жүрсіз бе?',
+      heroH1: 'Хостелді басқарыңыз —<br><span class="text-gradient-gold italic">хаосты емес</span>',
+      heroSub: 'BaYou — Қазақстандағы хостелдер үшін алғашқы платформа: брондаудан E&#8209;Qонақ-қа дейін бір таңда.',
+      heroPrimaryCta: 'Тегін сынап көру · 1 ай',
+      heroSecondaryCta: 'Демо көру · 4 минут',
+      heroMicrocopy: 'Картасыз. Шартсыз. Бір кликпен бас тарту.',
+      heroTrustLabel: 'Толықтай үйлесімді:',
+      problemHeading: 'Күнделікті жұмысыңызды танып тұрсыз ба?',
+      problem1Title: '«Бәрі дәптерде және WhatsApp-та»',
+      problem1Desc: 'Қонақ қоңырау шалады → сіз қолмен тіркейсіз → басқа қонақ сол төсекті бұрын брондап қойған. Қос брондау. Дау-дамай. Ақша қайтару.',
+      problem2Title: '«E-Qонақ — әр жолы қайтадан»',
+      problem2Desc: 'Шетелдік қонақты тіркеу 20 минут алады. Тексеруші келді — құжаттар дайын емес. Айыппұл.',
+      problem3Title: '«Айдағы ақша қайда?»',
+      problem3Desc: 'Kaspi келді, кассада қолма-қол ақша, бір бөлігі қолсыз есеп. Нақты қанша таптыңыз — айдың аяғында, үлгерсеңіз, біле аласыз.',
+      solutionHeading: 'BaYou — демалысқа шықпайтын сіздің <span class="italic text-gradient-gold">екінші әкімшіңіз</span>',
+      solutionDesc: 'Хостел операторына қажеттінің бәрін бір жүйеге жинадық. Телефонда, планшетте, компьютерде жұмыс істейді. Қазақстан нарығында жұмыс істейді — Kaspi, Halyk, E-Qонақ-пен.',
+      featuresHeading: 'Алты қосымшаның орнына бір экран',
+      feature1Title: 'Нөмірлерді басқару жүйесі',
+      feature1Desc: 'Брондардың көрнекі кестесі. Төсектер, нөмірлер, маусымдық бағалар — бәрі нақты уақытта. Қос брондау жоқ.',
+      feature2Title: 'AI-чатбот',
+      feature2Desc: 'Қонақтарға WhatsApp және Instagram-да тәулік бойы жауап береді. Брон қабылдайды, сұрақтарға жауап береді, төлемді растайды — сізсіз.',
+      feature3Title: 'Қара тізім',
+      feature3Desc: 'Қазақстан бойынша мәселелі қонақтар базасы. Қонуға дейін ескерту көресіз — оқиғаға дейін хостелді қорғайсыз.',
+      feature4Title: 'Kaspi / Halyk',
+      feature4Desc: 'QR, карта, аударым арқылы төлем қабылдаңыз. Бәрі жүйеде автоматты түрде тіркеледі.',
+      feature5Title: 'E-Qонақ автоматты түрде',
+      feature5Desc: 'Шетелдік қонақтарды 2 минутта тіркеу. Жүйе деректерді толтырады, сіз тек растайсыз.',
+      feature6Title: 'Қаржылық аналитика',
+      feature6Desc: 'Бүгін, аптада, айда қанша таптыңыз. Төсек түрлері бойынша, сату каналдары бойынша. Excel-сіз.',
+      howHeading: 'BaYou-ды іске қосу — ойлағаннан оңай',
+      how1Title: 'Тіркелу <span class="text-navy-950/45 text-base font-sans font-normal">· 5 минут</span>',
+      how1Desc: 'Хостел деректерін енгізесіз, нөмірлер мен төсектерді қосасыз. Біз әр қадамда көмектесеміз.',
+      how2Title: 'Баптау <span class="text-navy-950/45 text-base font-sans font-normal">· 1 күн</span>',
+      how2Desc: 'Kaspi/Halyk қосасыз, чат-ботты баптайсыз, бар брондарды көшіресіз. Біздің команда қасыңызда.',
+      how3Title: 'Жұмыс істейсіз <span class="text-navy-950/45 text-base font-sans font-normal">· бірден</span>',
+      how3Desc: 'Брон қабылдайсыз, қонақтарды тіркейсіз, түсімді көресіз — бәрі бір терезеде.',
+      proofHeading: 'Қазақстан хостелдері қазірдің өзінде ақылмен басқарады',
+      stat1Label: 'хостел қосылды',
+      stat2Label: 'E-Qонақ-қа тіркелу',
+      stat3Label: 'қос брондау',
+      testimonialsLabel: 'Демо-пікірлер · алғашқы клиенттерден кейін нақтыға алмастырамыз',
+      prevTestimonial: 'Алдыңғы пікір',
+      nextTestimonial: 'Келесі пікір',
+      testimonial1Quote: '«Бұрын таңертең кімнің қонып тұрғанын білу үшін 3 сағат жұмсайтын едім. Қазір BaYou-ды ашамын — бәрі 30 секундта көрінеді.»',
+      testimonial2Quote: '«E-Qонақ әрқашан бас ауруы болды. Енді бұл 2 минут алады. Қателіксіз.»',
+      testimonial3Quote: '«Kaspi мен Halyk енді өздері кассаға түседі. Ақыры хостелдің нақты уақытта қанша табатынын көріп отырмын.»',
+      testimonial4Quote: '«Бір күнде іске қостық. Картасыз, міндеттемесіз — ал қазір BaYou-сыз жұмысты елестете алмаймын.»',
+      galleryLabel: 'BaYou платформасындағы хостелдер · уақытша фотолар',
+      prevPhoto: 'Алдыңғы фото',
+      nextPhoto: 'Келесі фото',
+      galleryAlt1: 'Капсульный хостел, ортақ дәліз',
+      galleryAlt2: 'Хостелдің ағаш ұйықтау модулі',
+      galleryAlt3: 'Urbanpod капсулалары',
+      galleryAlt4: 'Екі қабатты төсектері бар хостел',
+      galleryAlt5: 'Көк төсектері бар хостелдің ортақ бөлмесі',
+      galleryAlt6: 'Жұмыс орындары бар заманауи хостел нөмірі',
+      pricingHeading: 'Ашық тарифтер. Жасырын төлем жоқ.',
+      plan1Subtitle: '20 төсекке дейін',
+      plan2Subtitle: '50 төсекке дейін',
+      plan3Subtitle: 'төсек саны шектелмеген',
+      perMonth: '/ ай',
+      planCta: 'Тегін сынап көру',
+      popularBadge: 'Танымал',
+      featPms: 'PMS — брондау',
+      featEqonaq: 'E-Qонақ',
+      featChatbot: 'AI-чатбот',
+      featAnalyticsBasic: 'Аналитика — негізгі',
+      featAnalyticsFull: 'Аналитика — толық',
+      featSupportEmail: 'Қолдау — email',
+      featSupportChat: 'Қолдау — чат',
+      featSupportPriority: 'Қолдау — басымдық + менеджер',
+      pricingNote: 'Барлық тарифтерге E-Qонақ және қазақстандық төлем жүйелері кіреді. ҚҰС қосылған. Бағалар іске қосу кезеңі үшін көрсетілген, менеджермен нақтыланады.',
+      faqHeading: 'Жиі қойылатын сұрақтар',
+      faqQ1: 'Компьютерге бірдеңе орнату керек пе?',
+      faqA1: 'Жоқ. BaYou браузерде және телефонда жұмыс істейді. Кірдіңіз — жұмыс істейсіз.',
+      faqQ2: 'Менің деректерім қауіпсіз бе?',
+      faqA2: 'Серверлер Қазақстанда. Деректер ҚР ЦДИАӨМ талаптарына сай келеді.',
+      faqQ3: 'Егер интернетім болмаса ше?',
+      faqA3: 'Негізгі функциялар офлайн жұмыс істейді. Байланыс қалпына келгенде деректер синхрондалады.',
+      faqQ4: 'Ескі брондарды қалай көшіру керек?',
+      faqA4: 'Біздің команда қосылу кезінде деректерді көшіруге көмектеседі. Бұл онбордингке кіреді.',
+      faqQ5: 'Booking.com және Airbnb-мен жұмыс істейді ме?',
+      faqA5: 'OTA-арналармен интеграция дайындалу үстінде. Қазірдің өзінде қолжетімді: тікелей брондар, Kaspi Pay, E-Qонақ.',
+      faqQ6: 'Жылдық шартқа байлану бар ма?',
+      faqA6: 'Жоқ. Төлем айлық, ұзақ мерзімді шартсыз. Жазылымды кез келген уақытта жеке кабинетте бір кликпен тоқтата аласыз.',
+      faqQ7: 'Төлемді тоқтатсам, деректерім не болады?',
+      faqA7: 'Барлық брондарды, қонақтарды және қаржылық есептерді кез келген уақытта жүктеп алуға болады. Деректерді жүктеп алу мүмкіндігі жазылым тоқтатылғаннан кейін 90 күн сақталады.',
+      faqQ8: 'Бір аккаунттан бірнеше хостелді басқаруға болады ма?',
+      faqA8: 'Иә. «Профи» тарифі бір жеке кабинеттен бірнеше нысанды және шектелмеген төсек санын қолдайды — хостел желілеріне ыңғайлы.',
+      faqQ9: 'Әкімшілерді оқыту қанша тұрады?',
+      faqA9: 'Тегін. Онбординг және персоналды оқыту кез келген тарифке кіреди — біздің команда бастауда әкімшілерді қосып, оқытады.',
+      ctaHeading: '1 ай · 30 күн тегін сынап көріңіз',
+      ctaSub: 'Картасыз. Міндеттемесіз. Хостелдің хаоссыз қалай жұмыс істейтінін көріңіз.',
+      ctaButton: 'Тегін бастау',
+      ctaMicrocopy: 'Қазақстанның 50-ден астам хостелі қазірдің өзінде BaYou арқылы басқарады. Қосылыңыз.',
+      leadHeading: 'Өтінім қалдырыңыз — бір күнде қосамыз',
+      leadSub: 'WhatsApp-қа жазыңыз немесе қоңырау шалыңыз — демо-қолжетімділікті баптап, брондарды тегін көшіруге көмектесеміз.',
+      leadWhatsapp: 'WhatsApp-қа жазу',
+      footerTagline: 'Хостелдерді басқаруға арналған Қазақстандағы алғашқы SaaS-платформа. Қазақстанда, қазақстандық нарық үшін жасалған.',
+      footerColPlatform: 'Платформа',
+      footerColLegal: 'Заңды ақпарат',
+      footerColContacts: 'Байланыс',
+      footerBin: 'БСН: нақтыланады',
+      footerPrivacy: 'Құпиялылық саясаты',
+      footerOffer: 'Жария оферта',
+      footerLocation: 'bayou.kz · Қазақстан',
+      footerCopyright: '© 2026 BaYou — «Q4 EXPORT» ЖШС. Барлық құқықтар қорғалған.',
+      footerAiNote: 'Құжат пен сайт AI-құралдарын пайдаланып дайындалды.',
+      scrollTopLabel: 'Жоғары'
+    }
+  };
+
+  function applyLanguage(lang){
+    lang = (lang === 'kk') ? 'kk' : 'ru';
+    var dict = I18N[lang];
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined){ el.innerHTML = dict[key]; }
+    });
+    document.querySelectorAll('[data-i18n-attr]').forEach(function(el){
+      el.getAttribute('data-i18n-attr').split(';').forEach(function(pair){
+        var parts = pair.split(':');
+        var attr = parts[0], key = parts[1];
+        if(dict[key] !== undefined){ el.setAttribute(attr, dict[key]); }
+      });
+    });
+    document.documentElement.setAttribute('lang', lang);
+    document.querySelectorAll('[data-lang-btn]').forEach(function(btn){
+      var active = btn.getAttribute('data-lang-btn') === lang;
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      btn.classList.toggle('is-active', active);
+    });
+    try{ localStorage.setItem('bayou-lang', lang); }catch(e){}
+  }
+
+  document.querySelectorAll('[data-lang-btn]').forEach(function(btn){
+    btn.addEventListener('click', function(){ applyLanguage(btn.getAttribute('data-lang-btn')); });
+  });
+
+  var savedLang = null;
+  try{ savedLang = localStorage.getItem('bayou-lang'); }catch(e){}
+  applyLanguage(savedLang === 'kk' ? 'kk' : 'ru');
+
+  /* ---------- Header scroll shadow ---------- */
+  var header = document.getElementById('site-header');
+  function onScrollHeader(){
+    if(window.scrollY > 8){ header.classList.add('scrolled'); }
+    else{ header.classList.remove('scrolled'); }
+  }
+  document.addEventListener('scroll', onScrollHeader, { passive: true });
+  onScrollHeader();
+
+  /* ---------- Scroll-to-top button ---------- */
+  var scrollTopBtn = document.getElementById('scroll-top');
+  function onScrollTopBtn(){
+    if(window.scrollY > 600){ scrollTopBtn.style.opacity = '1'; scrollTopBtn.style.pointerEvents = 'auto'; }
+    else{ scrollTopBtn.style.opacity = '0'; scrollTopBtn.style.pointerEvents = 'none'; }
+  }
+  document.addEventListener('scroll', onScrollTopBtn, { passive:true });
+  onScrollTopBtn();
+  scrollTopBtn.addEventListener('click', function(){ window.scrollTo({ top:0, behavior: reduceMotion ? 'auto' : 'smooth' }); });
+
+  /* ---------- Mobile drawer ---------- */
+  var menuToggle = document.getElementById('menu-toggle');
+  var drawer = document.getElementById('mobile-drawer');
+  var backdrop = document.getElementById('mobile-backdrop');
+  var drawerLinks = drawer.querySelectorAll('[data-drawer-link]');
+  var lastFocused = null;
+
+  function openMenu(){
+    lastFocused = document.activeElement;
+    menuToggle.setAttribute('aria-expanded','true');
+    drawer.classList.add('open');
+    backdrop.classList.add('open');
+    drawer.removeAttribute('aria-hidden');
+    document.body.classList.add('menu-open');
+  }
+  function closeMenu(){
+    menuToggle.setAttribute('aria-expanded','false');
+    drawer.classList.remove('open');
+    backdrop.classList.remove('open');
+    drawer.setAttribute('aria-hidden','true');
+    document.body.classList.remove('menu-open');
+    if(lastFocused && typeof lastFocused.focus === 'function'){ lastFocused.focus(); }
+  }
+  menuToggle.addEventListener('click', function(){
+    var isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
+    isOpen ? closeMenu() : openMenu();
+  });
+  backdrop.addEventListener('click', closeMenu);
+  drawerLinks.forEach(function(link){ link.addEventListener('click', closeMenu); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && menuToggle.getAttribute('aria-expanded') === 'true'){ closeMenu(); }
+  });
+
+  /* ---------- Reveal on scroll (with fail-safe for fast/instant scrolls) ---------- */
+  var revealEls = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+  if(reduceMotion || !('IntersectionObserver' in window)){
+    revealEls.forEach(function(el){ el.classList.add('is-visible'); });
+  } else {
+    var pending = revealEls.slice();
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+          var idx = pending.indexOf(entry.target);
+          if(idx > -1) pending.splice(idx, 1);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -10% 0px' });
+    pending.forEach(function(el){ io.observe(el); });
+
+    // Safety net: instant/fast jumps (anchor links, headless screenshot tools,
+    // restored scroll position) can outrun IntersectionObserver's callback timing.
+    // A cheap rAF-throttled scroll check guarantees nothing stays hidden forever.
+    var ticking = false;
+    function sweepPending(){
+      ticking = false;
+      if(!pending.length) return;
+      var vh = window.innerHeight;
+      pending.slice().forEach(function(el){
+        var r = el.getBoundingClientRect();
+        if(r.top < vh * 0.95 && r.bottom > 0){
+          el.classList.add('is-visible');
+          io.unobserve(el);
+          var idx = pending.indexOf(el);
+          if(idx > -1) pending.splice(idx, 1);
+        }
+      });
+    }
+    function onScrollSweep(){
+      if(!pending.length || ticking) return;
+      ticking = true;
+      requestAnimationFrame(sweepPending);
+    }
+    document.addEventListener('scroll', onScrollSweep, { passive:true });
+    window.addEventListener('resize', onScrollSweep);
+    sweepPending();
+  }
+
+  /* ---------- FAQ accordion ---------- */
+  document.querySelectorAll('.faq-item').forEach(function(item){
+    var trigger = item.querySelector('.faq-trigger');
+    trigger.addEventListener('click', function(){
+      var isOpen = item.getAttribute('data-open') === 'true';
+      item.setAttribute('data-open', isOpen ? 'false' : 'true');
+      trigger.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+    });
+  });
+
+  /* ---------- Infinite carousel ---------- */
+  function debounce(fn, wait){
+    var t;
+    return function(){
+      var args = arguments, ctx = this;
+      clearTimeout(t);
+      t = setTimeout(function(){ fn.apply(ctx, args); }, wait);
+    };
+  }
+
+  function Carousel(root){
+    this.root = root;
+    this.viewport = root.querySelector('.carousel-viewport');
+    this.track = root.querySelector('[data-track]');
+    this.originals = Array.prototype.slice.call(this.track.children);
+    this.cloneCount = Math.min(this.originals.length, 3);
+    this.index = this.cloneCount;
+    this.slideWidth = 0;
+    this.autoplayMs = 4800;
+    this.timer = null;
+    this.isAnimating = false;
+    this.init();
+  }
+  Carousel.prototype.init = function(){
+    var self = this;
+    if(this.originals.length > 1){
+      var head = this.originals.slice(-this.cloneCount).map(function(n){ var c = n.cloneNode(true); c.setAttribute('aria-hidden','true'); c.setAttribute('inert',''); return c; });
+      var tail = this.originals.slice(0, this.cloneCount).map(function(n){ var c = n.cloneNode(true); c.setAttribute('aria-hidden','true'); c.setAttribute('inert',''); return c; });
+      head.reverse().forEach(function(n){ self.track.insertBefore(n, self.track.firstChild); });
+      tail.forEach(function(n){ self.track.appendChild(n); });
+    } else {
+      this.cloneCount = 0;
+      this.index = 0;
+    }
+    this.slides = Array.prototype.slice.call(this.track.children);
+
+    this.track.addEventListener('transitionend', function(){ self.onTransitionEnd(); });
+
+    var prevBtns = this.root.querySelectorAll('[data-prev]');
+    var nextBtns = this.root.querySelectorAll('[data-next]');
+    prevBtns.forEach(function(b){ b.addEventListener('click', function(){ self.userNav(-1); }); });
+    nextBtns.forEach(function(b){ b.addEventListener('click', function(){ self.userNav(1); }); });
+
+    requestAnimationFrame(function(){ self.measure(); self.goTo(self.index, false); self.startAutoplay(); });
+    window.addEventListener('resize', debounce(function(){ self.measure(); self.goTo(self.index, false); }, 150));
+
+    this.viewport.addEventListener('mouseenter', function(){ self.paused = true; });
+    this.viewport.addEventListener('mouseleave', function(){ self.paused = false; });
+    document.addEventListener('visibilitychange', function(){ self.hidden = document.hidden; });
+  };
+  Carousel.prototype.measure = function(){
+    if(this.slides[0]){ this.slideWidth = this.slides[0].getBoundingClientRect().width; }
+  };
+  Carousel.prototype.goTo = function(i, animate){
+    this.track.style.transition = (animate && !reduceMotion) ? 'transform .65s cubic-bezier(.22,.61,.36,1)' : 'none';
+    this.track.style.transform = 'translateX(' + (-i * this.slideWidth) + 'px)';
+    this.index = i;
+  };
+  Carousel.prototype.userNav = function(dir){
+    this.move(dir);
+    this.restartAutoplay();
+  };
+  Carousel.prototype.move = function(dir){
+    if(this.isAnimating) return;
+    this.isAnimating = true;
+    this.goTo(this.index + dir, true);
+    if(reduceMotion){ this.onTransitionEnd(); }
+  };
+  Carousel.prototype.onTransitionEnd = function(){
+    this.isAnimating = false;
+    var max = this.slides.length;
+    var realCount = this.originals.length;
+    if(this.cloneCount === 0) return;
+    if(this.index < this.cloneCount){
+      this.index += realCount;
+      this.goTo(this.index, false);
+    } else if(this.index >= this.cloneCount + realCount){
+      this.index -= realCount;
+      this.goTo(this.index, false);
+    }
+  };
+  Carousel.prototype.startAutoplay = function(){
+    var self = this;
+    if(this.originals.length < 2) return;
+    this.timer = setInterval(function(){
+      if(!self.paused && !self.hidden){ self.move(1); }
+    }, this.autoplayMs);
+  };
+  Carousel.prototype.restartAutoplay = function(){
+    if(this.timer){ clearInterval(this.timer); }
+    this.startAutoplay();
+  };
+
+  document.querySelectorAll('[data-carousel]').forEach(function(el){ new Carousel(el); });
+
+})();
+</script>
+
+</body>
+</html>

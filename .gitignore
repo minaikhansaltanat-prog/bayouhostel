@@ -1,0 +1,7 @@
+node_modules/
+__pycache__/
+*.pyc
+.claude/
+
+# Raw unused source videos — too large for the repo, not referenced by the site
+Photo/*.mp4
