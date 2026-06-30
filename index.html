@@ -132,6 +132,13 @@
   .carousel-arrow:hover{ transform:scale(1.07); }
   .carousel-arrow:active{ transform:scale(.96); }
 
+  /* Marquee carousels */
+  @keyframes marqueeLeft { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .marquee-wrap { overflow:hidden; -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 7%,#000 93%,transparent 100%); mask-image:linear-gradient(to right,transparent 0%,#000 7%,#000 93%,transparent 100%); }
+  .marquee-track { display:flex; gap:16px; width:max-content; animation:marqueeLeft 30s linear infinite; }
+  @media(prefers-reduced-motion:reduce){ .marquee-track { animation:none!important; } }
+  .marquee-wrap:hover .marquee-track, .marquee-wrap:focus-within .marquee-track { animation-play-state:paused; }
+
   /* FAQ accordion using grid-rows trick */
   .faq-panel-wrap{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .4s cubic-bezier(.22,.61,.36,1); }
   .faq-item[data-open="true"] .faq-panel-wrap{ grid-template-rows:1fr; }
@@ -522,121 +529,279 @@
       </div>
     </div>
 
-    <!-- testimonial carousel -->
-    <div class="mt-14 reveal" data-carousel>
-      <div class="mb-8">
-        <p data-i18n="testimonialsLabel" class="text-xs uppercase tracking-wider text-cream-50/40">Форматы отзывов · обновим на реальные после первых клиентов</p>
+    <!-- testimonials multi-carousel -->
+    <div class="mt-14 reveal">
+
+      <!-- type pill nav -->
+      <div class="flex flex-wrap items-center gap-3 mb-10">
+        <button onclick="document.getElementById('rev-video').scrollIntoView({behavior:'smooth',block:'nearest'})"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-cream-50 text-navy-950 text-sm font-semibold shadow-[0_2px_14px_rgba(0,0,0,.3),0_1px_4px_rgba(0,0,0,.18)] transition-transform duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400">
+          <svg class="w-3 h-3" aria-hidden="true"><use href="#i-play"/></svg>
+          <span data-i18n="revTabVideo">Видео</span>
+        </button>
+        <button onclick="document.getElementById('rev-text').scrollIntoView({behavior:'smooth',block:'nearest'})"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/25 text-cream-50/85 text-sm font-semibold hover:bg-white/[0.08] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
+          <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#i-doc"/></svg>
+          <span data-i18n="revTabText">Письменные</span>
+        </button>
+        <button onclick="document.getElementById('rev-audio').scrollIntoView({behavior:'smooth',block:'nearest'})"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/25 text-cream-50/85 text-sm font-semibold hover:bg-white/[0.08] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
+          <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#i-mic"/></svg>
+          <span data-i18n="revTabAudio">Аудио</span>
+        </button>
+        <a href="#" id="link-2gis" target="_blank" rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#1CC55B]/35 text-[#1CC55B] text-sm font-semibold hover:bg-[#1CC55B]/[0.08] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1CC55B]/50">
+          <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#i-pin"/></svg>
+          <span data-i18n="revTab2gis">2GIS</span>
+        </a>
       </div>
 
-      <!-- arrows flank the track via wrapper padding -->
-      <div class="relative px-12 md:px-14">
-
-        <button type="button" data-prev
-          class="absolute left-0 top-1/2 -translate-y-1/2 z-10 carousel-arrow bg-white/8 border border-white/25 text-cream-50 shadow-[0_4px_20px_rgba(11,23,48,.5)]"
-          data-i18n-attr="aria-label:prevTestimonial" aria-label="Предыдущий отзыв">
-          <svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-left"/></svg>
-        </button>
-
-        <div class="carousel-viewport">
-          <div class="carousel-track" data-track>
-
-            <!-- Card 1: Жазбаша / Письменный отзыв -->
-            <article class="shrink-0 px-2" style="flex:0 0 100%;">
-              <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm flex flex-col">
-                <div class="flex gap-0.5 text-gold-400 text-lg" aria-hidden="true">★★★★★</div>
-                <p data-i18n="review1Quote" class="mt-4 font-display italic text-lg md:text-xl leading-relaxed text-cream-50/90 flex-1">«Попробовали неделю — время регистрации в E-Qонақ сократилось с 20 минут до 2. Обратного пути нет.»</p>
-                <p data-i18n="review1Author" class="mt-5 text-sm text-cream-50/55">— Алматы, менеджер хостела</p>
-                <div class="mt-5 pt-5 border-t border-white/10 flex items-center gap-2">
-                  <svg class="w-4 h-4 text-gold-400/55 shrink-0" aria-hidden="true"><use href="#i-doc"/></svg>
-                  <span data-i18n="review1Type" class="text-[11px] font-semibold uppercase tracking-[.12em] text-gold-400/55">Письменный отзыв</span>
+      <!-- VIDEO marquee -->
+      <div id="rev-video" class="mb-10">
+        <div class="flex items-center gap-2 mb-5">
+          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-gold-400/20">
+            <svg class="w-2.5 h-2.5 text-gold-400" style="margin-left:1px" aria-hidden="true"><use href="#i-play"/></svg>
+          </span>
+          <span data-i18n="revLabelVideo" class="text-[11px] uppercase tracking-[.14em] text-cream-50/40 font-semibold">Видео-отзывы</span>
+        </div>
+        <div class="marquee-wrap">
+          <div class="marquee-track" style="animation-duration:34s">
+            <article style="width:272px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl overflow-hidden backdrop-blur-sm">
+              <div class="relative h-36" style="background:linear-gradient(135deg,#1a3368 0%,#0b1730 100%)">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="w-11 h-11 rounded-full bg-gold-500/90 flex items-center justify-center shadow-[0_0_24px_rgba(217,165,33,.4)]">
+                    <svg class="w-4 h-4 text-navy-950" style="margin-left:2px" aria-hidden="true"><use href="#i-play"/></svg>
+                  </div>
                 </div>
+                <span class="absolute bottom-2 right-2.5 text-[10px] text-cream-50/60 font-mono bg-navy-950/70 px-1.5 py-px rounded">2:45</span>
+              </div>
+              <div class="p-4">
+                <div class="text-gold-400 text-[11px] mb-2.5 tracking-[.06em]">★★★★★</div>
+                <p data-i18n="vr1Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic">«После одной недели стало понятно: возврата к старому нет»</p>
+                <p data-i18n="vr1Author" class="mt-3 text-[11px] text-cream-50/50">— Астана, владелец хостела</p>
               </div>
             </article>
-
-            <!-- Card 2: Видео / Видео-отзыв -->
-            <article class="shrink-0 px-2" style="flex:0 0 100%;">
-              <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl overflow-hidden backdrop-blur-sm flex flex-col">
-                <div class="relative h-36 md:h-44 bg-navy-950/70 flex items-center justify-center shrink-0">
-                  <div class="w-14 h-14 rounded-full bg-gold-500/90 flex items-center justify-center shadow-[0_0_30px_rgba(217,165,33,.35)]">
-                    <svg class="w-6 h-6 text-navy-950 ml-1" aria-hidden="true"><use href="#i-play"/></svg>
-                  </div>
-                  <span data-i18n="review2Duration" class="absolute bottom-3 right-4 text-[11px] text-cream-50/60 font-mono bg-navy-950/60 px-2 py-0.5 rounded-md">3:42</span>
-                </div>
-                <div class="p-7 md:p-8 flex flex-col flex-1">
-                  <p data-i18n="review2Quote" class="font-display italic text-base md:text-lg leading-relaxed text-cream-50/90 flex-1">«После одной недели стало понятно: возврата к старому нет...»</p>
-                  <p data-i18n="review2Author" class="mt-4 text-sm text-cream-50/55">— Астана, владелец хостела</p>
-                  <div class="mt-5 pt-5 border-t border-white/10 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-gold-400/55 shrink-0" aria-hidden="true"><use href="#i-play"/></svg>
-                    <span data-i18n="review2Type" class="text-[11px] font-semibold uppercase tracking-[.12em] text-gold-400/55">Видео-отзыв</span>
+            <article style="width:272px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl overflow-hidden backdrop-blur-sm">
+              <div class="relative h-36" style="background:linear-gradient(135deg,#0d2645 0%,#121f3c 100%)">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="w-11 h-11 rounded-full bg-gold-500/90 flex items-center justify-center shadow-[0_0_24px_rgba(217,165,33,.4)]">
+                    <svg class="w-4 h-4 text-navy-950" style="margin-left:2px" aria-hidden="true"><use href="#i-play"/></svg>
                   </div>
                 </div>
+                <span class="absolute bottom-2 right-2.5 text-[10px] text-cream-50/60 font-mono bg-navy-950/70 px-1.5 py-px rounded">3:12</span>
+              </div>
+              <div class="p-4">
+                <div class="text-gold-400 text-[11px] mb-2.5 tracking-[.06em]">★★★★★</div>
+                <p data-i18n="vr2Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic">«Регистрация E-Qонақ сократилась с 20 минут до 2 — не верил, пока не попробовал»</p>
+                <p data-i18n="vr2Author" class="mt-3 text-[11px] text-cream-50/50">— Алматы, менеджер хостела</p>
               </div>
             </article>
-
-            <!-- Card 3: Аудио / Аудио-отзыв -->
-            <article class="shrink-0 px-2" style="flex:0 0 100%;">
-              <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl p-7 md:p-8 backdrop-blur-sm flex flex-col">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-gold-400/15 border border-gold-400/30 flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4 text-gold-400 ml-0.5" aria-hidden="true"><use href="#i-play"/></svg>
+            <article style="width:272px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl overflow-hidden backdrop-blur-sm">
+              <div class="relative h-36" style="background:linear-gradient(135deg,#1c3060 0%,#0e1e3a 100%)">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="w-11 h-11 rounded-full bg-gold-500/90 flex items-center justify-center shadow-[0_0_24px_rgba(217,165,33,.4)]">
+                    <svg class="w-4 h-4 text-navy-950" style="margin-left:2px" aria-hidden="true"><use href="#i-play"/></svg>
                   </div>
-                  <div class="flex items-end gap-[3px] flex-1 h-8">
-                    <div class="w-[3px] rounded-full bg-gold-400/30" style="height:35%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/50" style="height:65%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/70" style="height:90%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/55" style="height:55%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/80" style="height:100%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/65" style="height:75%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/45" style="height:45%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/60" style="height:82%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/40" style="height:60%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/55" style="height:40%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/70" style="height:88%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/45" style="height:50%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/60" style="height:70%"></div>
-                    <div class="w-[3px] rounded-full bg-gold-400/35" style="height:30%"></div>
-                  </div>
-                  <span data-i18n="review3Duration" class="text-xs text-cream-50/50 font-mono shrink-0">2:18</span>
                 </div>
-                <p data-i18n="review3Quote" class="mt-6 font-display italic text-base md:text-lg leading-relaxed text-cream-50/90 flex-1">«Подключение Kaspi и Halyk заняло 2 часа. Теперь всё фиксируется автоматически.»</p>
-                <p data-i18n="review3Author" class="mt-4 text-sm text-cream-50/55">— Шымкент, оператор хостела</p>
-                <div class="mt-5 pt-5 border-t border-white/10 flex items-center gap-2">
-                  <svg class="w-4 h-4 text-gold-400/55 shrink-0" aria-hidden="true"><use href="#i-mic"/></svg>
-                  <span data-i18n="review3Type" class="text-[11px] font-semibold uppercase tracking-[.12em] text-gold-400/55">Аудио-отзыв</span>
-                </div>
+                <span class="absolute bottom-2 right-2.5 text-[10px] text-cream-50/60 font-mono bg-navy-950/70 px-1.5 py-px rounded">1:58</span>
+              </div>
+              <div class="p-4">
+                <div class="text-gold-400 text-[11px] mb-2.5 tracking-[.06em]">★★★★★</div>
+                <p data-i18n="vr3Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic">«Двойные брони исчезли полностью. Система контролирует всё в реальном времени»</p>
+                <p data-i18n="vr3Author" class="mt-3 text-[11px] text-cream-50/50">— Шымкент, администратор</p>
               </div>
             </article>
-
-            <!-- Card 4: 2GIS -->
-            <article class="shrink-0 px-2" style="flex:0 0 100%;">
-              <div class="h-full bg-white/[0.06] border border-white/12 rounded-2xl overflow-hidden backdrop-blur-sm flex flex-col">
-                <div class="bg-[#1CC55B]/10 border-b border-[#1CC55B]/20 px-7 py-4 flex items-center justify-between shrink-0">
-                  <span class="font-bold text-[#1CC55B] text-xl tracking-[-0.03em]">2GIS</span>
-                  <div class="flex items-center gap-2">
-                    <span class="text-[#1CC55B] text-base">★★★★★</span>
-                    <span data-i18n="review4Rating" class="font-semibold text-sm text-cream-50">4.9</span>
+            <article style="width:272px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl overflow-hidden backdrop-blur-sm">
+              <div class="relative h-36" style="background:linear-gradient(135deg,#142850 0%,#0b1730 100%)">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="w-11 h-11 rounded-full bg-gold-500/90 flex items-center justify-center shadow-[0_0_24px_rgba(217,165,33,.4)]">
+                    <svg class="w-4 h-4 text-navy-950" style="margin-left:2px" aria-hidden="true"><use href="#i-play"/></svg>
                   </div>
                 </div>
-                <div class="p-7 md:p-8 flex flex-col flex-1">
-                  <p data-i18n="review4Quote" class="font-display italic text-base md:text-lg leading-relaxed text-cream-50/90 flex-1">«Система очень удобная, интерфейс понятный. Рекомендуем всем хостелам.»</p>
-                  <p data-i18n="review4Author" class="mt-4 text-sm text-cream-50/55">— Акниет Б. · пользователь 2GIS</p>
-                  <div class="mt-5 pt-5 border-t border-white/10 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-gold-400/55 shrink-0" aria-hidden="true"><use href="#i-pin"/></svg>
-                    <span data-i18n="review4Count" class="text-[11px] font-semibold uppercase tracking-[.12em] text-gold-400/55">47 отзывов · в 2GIS</span>
-                  </div>
-                </div>
+                <span class="absolute bottom-2 right-2.5 text-[10px] text-cream-50/60 font-mono bg-navy-950/70 px-1.5 py-px rounded">2:23</span>
+              </div>
+              <div class="p-4">
+                <div class="text-gold-400 text-[11px] mb-2.5 tracking-[.06em]">★★★★★</div>
+                <p data-i18n="vr4Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic">«Подключение заняло один день — теперь работаем в разы быстрее»</p>
+                <p data-i18n="vr4Author" class="mt-3 text-[11px] text-cream-50/50">— Алматы, оператор хостела</p>
               </div>
             </article>
-
           </div>
         </div>
-
-        <button type="button" data-next
-          class="absolute right-0 top-1/2 -translate-y-1/2 z-10 carousel-arrow bg-white/8 border border-white/25 text-cream-50 shadow-[0_4px_20px_rgba(11,23,48,.5)]"
-          data-i18n-attr="aria-label:nextTestimonial" aria-label="Следующий отзыв">
-          <svg class="w-5 h-5" aria-hidden="true"><use href="#i-chevron-right"/></svg>
-        </button>
       </div>
+
+      <!-- TEXT marquee -->
+      <div id="rev-text" class="mb-10">
+        <div class="flex items-center gap-2 mb-5">
+          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-gold-400/20">
+            <svg class="w-2.5 h-2.5 text-gold-400" aria-hidden="true"><use href="#i-doc"/></svg>
+          </span>
+          <span data-i18n="revLabelText" class="text-[11px] uppercase tracking-[.14em] text-cream-50/40 font-semibold">Письменные отзывы</span>
+        </div>
+        <div class="marquee-wrap">
+          <div class="marquee-track" style="animation-duration:28s">
+            <article style="width:290px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl p-5 backdrop-blur-sm flex flex-col">
+              <div class="text-gold-400 text-[11px] mb-3 tracking-[.06em]">★★★★★</div>
+              <p data-i18n="tr1Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic flex-1">«Kaspi и Halyk настроили за 2 часа. Теперь все платежи фиксируются автоматически»</p>
+              <p data-i18n="tr1Author" class="mt-3 text-[11px] text-cream-50/50">— Шымкент, оператор</p>
+              <div class="mt-3 pt-3 border-t border-white/[0.08] flex items-center gap-1.5">
+                <svg class="w-3 h-3 text-gold-400/45 shrink-0" aria-hidden="true"><use href="#i-doc"/></svg>
+                <span data-i18n="revTypeText" class="text-[10px] font-semibold uppercase tracking-[.1em] text-gold-400/45">Письменный отзыв</span>
+              </div>
+            </article>
+            <article style="width:290px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl p-5 backdrop-blur-sm flex flex-col">
+              <div class="text-gold-400 text-[11px] mb-3 tracking-[.06em]">★★★★★</div>
+              <p data-i18n="tr2Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic flex-1">«Накладки с бронями исчезли — система видит каждое место в реальном времени»</p>
+              <p data-i18n="tr2Author" class="mt-3 text-[11px] text-cream-50/50">— Алматы, менеджер хостела</p>
+              <div class="mt-3 pt-3 border-t border-white/[0.08] flex items-center gap-1.5">
+                <svg class="w-3 h-3 text-gold-400/45 shrink-0" aria-hidden="true"><use href="#i-doc"/></svg>
+                <span data-i18n="revTypeText" class="text-[10px] font-semibold uppercase tracking-[.1em] text-gold-400/45">Письменный отзыв</span>
+              </div>
+            </article>
+            <article style="width:290px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl p-5 backdrop-blur-sm flex flex-col">
+              <div class="text-gold-400 text-[11px] mb-3 tracking-[.06em]">★★★★★</div>
+              <p data-i18n="tr3Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic flex-1">«AI-чатбот отвечает гостям в WhatsApp даже ночью. Ни одна заявка не теряется»</p>
+              <p data-i18n="tr3Author" class="mt-3 text-[11px] text-cream-50/50">— Астана, хостел</p>
+              <div class="mt-3 pt-3 border-t border-white/[0.08] flex items-center gap-1.5">
+                <svg class="w-3 h-3 text-gold-400/45 shrink-0" aria-hidden="true"><use href="#i-doc"/></svg>
+                <span data-i18n="revTypeText" class="text-[10px] font-semibold uppercase tracking-[.1em] text-gold-400/45">Письменный отзыв</span>
+              </div>
+            </article>
+            <article style="width:290px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl p-5 backdrop-blur-sm flex flex-col">
+              <div class="text-gold-400 text-[11px] mb-3 tracking-[.06em]">★★★★★</div>
+              <p data-i18n="tr4Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic flex-1">«Одним аккаунтом управляем тремя хостелами. Раньше это были три головные боли»</p>
+              <p data-i18n="tr4Author" class="mt-3 text-[11px] text-cream-50/50">— Алматы, сеть хостелов</p>
+              <div class="mt-3 pt-3 border-t border-white/[0.08] flex items-center gap-1.5">
+                <svg class="w-3 h-3 text-gold-400/45 shrink-0" aria-hidden="true"><use href="#i-doc"/></svg>
+                <span data-i18n="revTypeText" class="text-[10px] font-semibold uppercase tracking-[.1em] text-gold-400/45">Письменный отзыв</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUDIO marquee -->
+      <div id="rev-audio">
+        <div class="flex items-center gap-2 mb-5">
+          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-gold-400/20">
+            <svg class="w-2.5 h-2.5 text-gold-400" aria-hidden="true"><use href="#i-mic"/></svg>
+          </span>
+          <span data-i18n="revLabelAudio" class="text-[11px] uppercase tracking-[.14em] text-cream-50/40 font-semibold">Аудио-отзывы</span>
+        </div>
+        <div class="marquee-wrap">
+          <div class="marquee-track" style="animation-duration:38s">
+            <article style="width:268px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl p-4 backdrop-blur-sm">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-9 h-9 rounded-full bg-gold-400/15 border border-gold-400/30 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5 text-gold-400" style="margin-left:1px" aria-hidden="true"><use href="#i-play"/></svg>
+                </div>
+                <div class="flex items-end gap-[2px] flex-1 h-7">
+                  <div class="w-[3px] rounded-full bg-gold-400/30" style="height:35%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/50" style="height:65%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/70" style="height:90%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/55" style="height:55%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/80" style="height:100%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/65" style="height:75%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/45" style="height:45%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/60" style="height:82%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/40" style="height:60%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/55" style="height:40%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/70" style="height:88%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/45" style="height:50%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/60" style="height:70%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/35" style="height:30%"></div>
+                </div>
+                <span data-i18n="ar1Dur" class="text-[11px] text-cream-50/50 font-mono shrink-0">2:18</span>
+              </div>
+              <div class="text-gold-400 text-[11px] mb-2 tracking-[.06em]">★★★★★</div>
+              <p data-i18n="ar1Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic">«Подключение Kaspi и Halyk заняло 2 часа. Теперь всё фиксируется автоматически»</p>
+              <p data-i18n="ar1Author" class="mt-2.5 text-[11px] text-cream-50/50">— Шымкент, оператор</p>
+            </article>
+            <article style="width:268px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl p-4 backdrop-blur-sm">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-9 h-9 rounded-full bg-gold-400/15 border border-gold-400/30 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5 text-gold-400" style="margin-left:1px" aria-hidden="true"><use href="#i-play"/></svg>
+                </div>
+                <div class="flex items-end gap-[2px] flex-1 h-7">
+                  <div class="w-[3px] rounded-full bg-gold-400/50" style="height:50%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/70" style="height:80%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/45" style="height:45%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/80" style="height:95%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/60" style="height:68%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/35" style="height:35%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/75" style="height:85%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/55" style="height:60%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/65" style="height:72%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/40" style="height:40%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/80" style="height:90%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/50" style="height:55%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/65" style="height:75%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/30" style="height:25%"></div>
+                </div>
+                <span data-i18n="ar2Dur" class="text-[11px] text-cream-50/50 font-mono shrink-0">1:55</span>
+              </div>
+              <div class="text-gold-400 text-[11px] mb-2 tracking-[.06em]">★★★★★</div>
+              <p data-i18n="ar2Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic">«Гости сами бронируют через чат-бот. Я просто подтверждаю оплату»</p>
+              <p data-i18n="ar2Author" class="mt-2.5 text-[11px] text-cream-50/50">— Алматы, владелец</p>
+            </article>
+            <article style="width:268px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl p-4 backdrop-blur-sm">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-9 h-9 rounded-full bg-gold-400/15 border border-gold-400/30 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5 text-gold-400" style="margin-left:1px" aria-hidden="true"><use href="#i-play"/></svg>
+                </div>
+                <div class="flex items-end gap-[2px] flex-1 h-7">
+                  <div class="w-[3px] rounded-full bg-gold-400/60" style="height:70%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/40" style="height:40%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/80" style="height:95%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/55" style="height:62%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/70" style="height:80%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/35" style="height:38%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/65" style="height:75%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/80" style="height:100%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/50" style="height:55%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/70" style="height:85%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/45" style="height:48%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/60" style="height:68%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/35" style="height:30%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/55" style="height:60%"></div>
+                </div>
+                <span data-i18n="ar3Dur" class="text-[11px] text-cream-50/50 font-mono shrink-0">3:07</span>
+              </div>
+              <div class="text-gold-400 text-[11px] mb-2 tracking-[.06em]">★★★★★</div>
+              <p data-i18n="ar3Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic">«Рекомендую всем хостелам Казахстана. Система окупается за первый месяц»</p>
+              <p data-i18n="ar3Author" class="mt-2.5 text-[11px] text-cream-50/50">— Астана, управляющий</p>
+            </article>
+            <article style="width:268px;flex-shrink:0;" class="bg-white/[0.06] border border-white/[0.1] rounded-2xl p-4 backdrop-blur-sm">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-9 h-9 rounded-full bg-gold-400/15 border border-gold-400/30 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5 text-gold-400" style="margin-left:1px" aria-hidden="true"><use href="#i-play"/></svg>
+                </div>
+                <div class="flex items-end gap-[2px] flex-1 h-7">
+                  <div class="w-[3px] rounded-full bg-gold-400/45" style="height:48%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/75" style="height:88%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/55" style="height:60%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/35" style="height:35%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/80" style="height:92%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/60" style="height:72%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/40" style="height:42%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/70" style="height:82%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/55" style="height:58%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/80" style="height:96%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/45" style="height:50%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/65" style="height:75%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/30" style="height:32%"></div>
+                  <div class="w-[3px] rounded-full bg-gold-400/60" style="height:65%"></div>
+                </div>
+                <span data-i18n="ar4Dur" class="text-[11px] text-cream-50/50 font-mono shrink-0">2:33</span>
+              </div>
+              <div class="text-gold-400 text-[11px] mb-2 tracking-[.06em]">★★★★★</div>
+              <p data-i18n="ar4Quote" class="text-[13px] leading-relaxed text-cream-50/85 font-display italic">«Выручка выросла на 20% — просто потому что теперь нет потерянных броней»</p>
+              <p data-i18n="ar4Author" class="mt-2.5 text-[11px] text-cream-50/50">— Семей, хостел</p>
+            </article>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- gallery carousel -->
@@ -1008,25 +1173,42 @@
       stat1Label: 'хостелов подключены',
       stat2Label: 'регистрация в E-Qонақ',
       stat3Label: 'двойных броней',
-      testimonialsLabel: 'Форматы отзывов · обновим на реальные после первых клиентов',
-      prevTestimonial: 'Предыдущий отзыв',
-      nextTestimonial: 'Следующий отзыв',
-      review1Type: 'Письменный отзыв',
-      review1Quote: '«Попробовали неделю — время регистрации в E-Qонақ сократилось с 20 минут до 2. Обратного пути нет.»',
-      review1Author: '— Алматы, менеджер хостела',
-      review2Type: 'Видео-отзыв',
-      review2Duration: '3:42',
-      review2Quote: '«После одной недели стало понятно: возврата к старому нет...»',
-      review2Author: '— Астана, владелец хостела',
-      review3Type: 'Аудио-отзыв',
-      review3Duration: '2:18',
-      review3Quote: '«Подключение Kaspi и Halyk заняло 2 часа. Теперь всё фиксируется автоматически.»',
-      review3Author: '— Шымкент, оператор хостела',
-      review4Type: '2GIS пікірі',
-      review4Rating: '4.9',
-      review4Quote: '«Система очень удобная, интерфейс понятный. Рекомендуем всем хостелам.»',
-      review4Author: '— Акниет Б. · пользователь 2GIS',
-      review4Count: '47 отзывов · в 2GIS',
+      revTabVideo: 'Видео',
+      revTabText: 'Письменные',
+      revTabAudio: 'Аудио',
+      revTab2gis: '2GIS',
+      revLabelVideo: 'Видео-отзывы',
+      revLabelText: 'Письменные отзывы',
+      revLabelAudio: 'Аудио-отзывы',
+      revTypeText: 'Письменный отзыв',
+      vr1Quote: '«После одной недели стало понятно: возврата к старому нет»',
+      vr1Author: '— Астана, владелец хостела',
+      vr2Quote: '«Регистрация E-Qонақ сократилась с 20 минут до 2 — не верил, пока не попробовал»',
+      vr2Author: '— Алматы, менеджер хостела',
+      vr3Quote: '«Двойные брони исчезли полностью. Система контролирует всё в реальном времени»',
+      vr3Author: '— Шымкент, администратор',
+      vr4Quote: '«Подключение заняло один день — теперь работаем в разы быстрее»',
+      vr4Author: '— Алматы, оператор хостела',
+      tr1Quote: '«Kaspi и Halyk настроили за 2 часа. Теперь все платежи фиксируются автоматически»',
+      tr1Author: '— Шымкент, оператор',
+      tr2Quote: '«Накладки с бронями исчезли — система видит каждое место в реальном времени»',
+      tr2Author: '— Алматы, менеджер хостела',
+      tr3Quote: '«AI-чатбот отвечает гостям в WhatsApp даже ночью. Ни одна заявка не теряется»',
+      tr3Author: '— Астана, хостел',
+      tr4Quote: '«Одним аккаунтом управляем тремя хостелами. Раньше это были три головные боли»',
+      tr4Author: '— Алматы, сеть хостелов',
+      ar1Dur: '2:18',
+      ar1Quote: '«Подключение Kaspi и Halyk заняло 2 часа. Теперь всё фиксируется автоматически»',
+      ar1Author: '— Шымкент, оператор',
+      ar2Dur: '1:55',
+      ar2Quote: '«Гости сами бронируют через чат-бот. Я просто подтверждаю оплату»',
+      ar2Author: '— Алматы, владелец',
+      ar3Dur: '3:07',
+      ar3Quote: '«Рекомендую всем хостелам Казахстана. Система окупается за первый месяц»',
+      ar3Author: '— Астана, управляющий',
+      ar4Dur: '2:33',
+      ar4Quote: '«Выручка выросла на 20% — просто потому что теперь нет потерянных броней»',
+      ar4Author: '— Семей, хостел',
       galleryLabel: 'Хостелы на платформе BaYou · временные фото',
       prevPhoto: 'Предыдущее фото',
       nextPhoto: 'Следующее фото',
@@ -1146,25 +1328,42 @@
       stat1Label: 'хостел қосылды',
       stat2Label: 'E-Qонақ-қа тіркелу',
       stat3Label: 'қос брондау',
-      testimonialsLabel: 'Пікір форматтары · алғашқы клиенттерден кейін нақтыға алмастырамыз',
-      prevTestimonial: 'Алдыңғы пікір',
-      nextTestimonial: 'Келесі пікір',
-      review1Type: 'Жазбаша пікір',
-      review1Quote: '«Бір апта пайдаланып көрдік — E-Qонақ тіркеу 20 минуттан 2 минутқа дейін қысқарды. Бұрынғыға оралу мүмкін емес.»',
-      review1Author: '— Алматы, хостел менеджері',
-      review2Type: 'Видео пікір',
-      review2Duration: '3:42',
-      review2Quote: '«Бір аптадан кейін бұрынғы жүйеге оралу мүмкін еместігі белгілі болды...»',
-      review2Author: '— Астана, хостел иесі',
-      review3Type: 'Аудио пікір',
-      review3Duration: '2:18',
-      review3Quote: '«Kaspi мен Halyk-ты қосу 2 сағат алды. Енді бәрі автоматты түрде тіркеледі.»',
-      review3Author: '— Шымкент, хостел операторы',
-      review4Type: '2GIS пікірі',
-      review4Rating: '4.9',
-      review4Quote: '«Жүйе өте ыңғайлы, интерфейс нақты. Кез-келген хостелге ұсынамын.»',
-      review4Author: '— Акниет Б. · 2GIS пайдаланушысы',
-      review4Count: '47 пікір · 2GIS-те',
+      revTabVideo: 'Видео',
+      revTabText: 'Жазбаша',
+      revTabAudio: 'Аудио',
+      revTab2gis: '2GIS',
+      revLabelVideo: 'Видео пікірлер',
+      revLabelText: 'Жазбаша пікірлер',
+      revLabelAudio: 'Аудио пікірлер',
+      revTypeText: 'Жазбаша пікір',
+      vr1Quote: '«Бір аптадан кейін бұрынғы жүйеге оралу мүмкін еместігі белгілі болды»',
+      vr1Author: '— Астана, хостел иесі',
+      vr2Quote: '«E-Qонақ тіркелу 20 минуттан 2-ге дейін қысқарды — сынап көргенше сенбедім»',
+      vr2Author: '— Алматы, менеджер',
+      vr3Quote: '«Қос брондаулар мүлдем жоғалды. Жүйе бәрін нақты уақытта бақылайды»',
+      vr3Author: '— Шымкент, администратор',
+      vr4Quote: '«Қосылу бір күн алды — енді бірнеше есе жылдам жұмыс істейміз»',
+      vr4Author: '— Алматы, хостел операторы',
+      tr1Quote: '«Kaspi мен Halyk-ты 2 сағатта баптадық. Енді барлық төлемдер автоматты тіркеледі»',
+      tr1Author: '— Шымкент, оператор',
+      tr2Quote: '«Брондар шатасуы жоғалды — жүйе әр орынды нақты уақытта көреді»',
+      tr2Author: '— Алматы, хостел менеджері',
+      tr3Quote: '«AI-чатбот қонақтарға WhatsApp-та түнде де жауап береді. Бірде-бір өтінім жоғалмайды»',
+      tr3Author: '— Астана, хостел',
+      tr4Quote: '«Бір аккаунтпен үш хостелді басқарамыз. Бұрын бұл үш бас ауруы болатын»',
+      tr4Author: '— Алматы, хостел желісі',
+      ar1Dur: '2:18',
+      ar1Quote: '«Kaspi мен Halyk-ты қосу 2 сағат алды. Енді бәрі автоматты тіркеледі»',
+      ar1Author: '— Шымкент, оператор',
+      ar2Dur: '1:55',
+      ar2Quote: '«Қонақтар чат-бот арқылы өздері брондайды. Мен тек төлемді растаймын»',
+      ar2Author: '— Алматы, иесі',
+      ar3Dur: '3:07',
+      ar3Quote: '«Қазақстанның барлық хостелдеріне ұсынамын. Жүйе бірінші айда-ақ өтеледі»',
+      ar3Author: '— Астана, басқарушы',
+      ar4Dur: '2:33',
+      ar4Quote: '«Түсім 20%-ға өсті — жоғалған брондар болмаған соң»',
+      ar4Author: '— Семей, хостел',
       galleryLabel: 'BaYou платформасындағы хостелдер · уақытша фотолар',
       prevPhoto: 'Алдыңғы фото',
       nextPhoto: 'Келесі фото',
@@ -1464,6 +1663,17 @@
   };
 
   document.querySelectorAll('[data-carousel]').forEach(function(el){ new Carousel(el); });
+
+  /* marquee: duplicate children after i18n has applied text */
+  document.querySelectorAll('.marquee-track').forEach(function(track){
+    var items = Array.prototype.slice.call(track.children);
+    items.forEach(function(el){
+      var c = el.cloneNode(true);
+      c.setAttribute('aria-hidden','true');
+      c.setAttribute('inert','');
+      track.appendChild(c);
+    });
+  });
 
 })();
 </script>
