@@ -1143,23 +1143,31 @@
 </div>
 
 <!-- ====== REVIEW MODAL ====== -->
-<div id="rev-modal" class="fixed inset-0 z-[9999] hidden" role="dialog" aria-modal="true">
-  <div id="rev-modal-backdrop" class="absolute inset-0 bg-navy-950/92 backdrop-blur-md"></div>
-  <div class="relative z-10 flex items-center justify-center min-h-screen p-4 sm:p-8">
-    <button id="rev-modal-close" class="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-full bg-white/[0.08] border border-white/20 text-cream-50/80 flex items-center justify-center hover:bg-white/[0.15] hover:text-cream-50 transition-colors focus-visible:outline-none" aria-label="Закрыть">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-    </button>
-    <button id="rev-modal-prev" class="modal-nav-btn absolute left-2 sm:left-4 top-1/2 -translate-y-1/2" aria-label="Предыдущий отзыв">
-      <svg class="w-5 h-5"><use href="#i-chevron-left"/></svg>
-    </button>
-    <div class="w-full max-w-md mx-auto px-12 sm:px-14">
-      <div id="rev-modal-body" class="w-full"></div>
-      <p id="rev-modal-counter" class="mt-4 text-center text-xs text-cream-50/40 font-mono tracking-wider"></p>
-    </div>
-    <button id="rev-modal-next" class="modal-nav-btn absolute right-2 sm:right-4 top-1/2 -translate-y-1/2" aria-label="Следующий отзыв">
-      <svg class="w-5 h-5"><use href="#i-chevron-right"/></svg>
-    </button>
+<!-- backdrop = click-outside-to-close zone -->
+<div id="rev-modal" class="fixed inset-0 z-[9999] hidden bg-navy-950/92 backdrop-blur-md flex items-center justify-center p-4 sm:p-8" role="dialog" aria-modal="true">
+
+  <!-- X close button — top-right, gold-accented -->
+  <button id="rev-modal-close"
+    class="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 w-11 h-11 rounded-full flex items-center justify-center focus-visible:outline-none"
+    style="background:rgba(217,165,33,.12);border:1.5px solid rgba(217,165,33,.45);color:rgb(217,165,33);transition:background .2s,border-color .2s,transform .15s;box-shadow:0 0 18px rgba(217,165,33,.12)"
+    onmouseenter="this.style.background='rgba(217,165,33,.22)';this.style.borderColor='rgba(217,165,33,.75)';this.style.transform='scale(1.08)'"
+    onmouseleave="this.style.background='rgba(217,165,33,.12)';this.style.borderColor='rgba(217,165,33,.45)';this.style.transform='scale(1)'"
+    aria-label="Закрыть">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+
+  <!-- prev / card / next — stopPropagation so clicking card doesn't close -->
+  <button id="rev-modal-prev" class="modal-nav-btn shrink-0 mr-2 sm:mr-4" aria-label="Предыдущий отзыв">
+    <svg class="w-5 h-5"><use href="#i-chevron-left"/></svg>
+  </button>
+  <div id="rev-modal-inner" class="w-full max-w-md">
+    <div id="rev-modal-body" class="w-full"></div>
+    <p id="rev-modal-counter" class="mt-4 text-center text-xs text-cream-50/40 font-mono tracking-wider"></p>
   </div>
+  <button id="rev-modal-next" class="modal-nav-btn shrink-0 ml-2 sm:ml-4" aria-label="Следующий отзыв">
+    <svg class="w-5 h-5"><use href="#i-chevron-right"/></svg>
+  </button>
+
 </div>
 
 </main>
@@ -1775,8 +1783,16 @@
       document.body.style.overflow = '';
     }
 
+    /* close on X button */
     document.getElementById('rev-modal-close').addEventListener('click', closeModal);
-    document.getElementById('rev-modal-backdrop').addEventListener('click', closeModal);
+
+    /* close on backdrop (click anywhere outside the card) */
+    modal.addEventListener('click', closeModal);
+
+    /* prevent backdrop-close when clicking inside the card area */
+    document.getElementById('rev-modal-inner').addEventListener('click', function(e){ e.stopPropagation(); });
+    modalPrev.addEventListener('click', function(e){ e.stopPropagation(); });
+    modalNext.addEventListener('click', function(e){ e.stopPropagation(); });
     modalPrev.addEventListener('click', function(){ if(modalIdx > 0){ modalIdx--; renderModalCard(); } });
     modalNext.addEventListener('click', function(){ if(modalIdx < modalCards.length - 1){ modalIdx++; renderModalCard(); } });
 
